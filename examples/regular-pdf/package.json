@@ -1,0 +1,26 @@
+{
+  "name": "regular-pdf",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "skrift build",
+    "dev": "skrift dev",
+    "export": "skrift export"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@skrift/render": "workspace:*",
+    "@skrift/tailwind": "workspace:*",
+    "@skrift/preview-server": "workspace:*",
+    "skrift": "workspace:*",
+    "bun-types": "latest",
+    "react": "^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^18.0 || ^19.0 || ^19.0.0-rc"
+  }
+}

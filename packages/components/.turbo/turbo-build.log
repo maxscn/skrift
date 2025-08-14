@@ -1,0 +1,17 @@
+
+[0m[2m[35m$[0m [2m[1mtsup-node[0m
+[34mCLI[39m Building entry: src/index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.4.0
+[34mCLI[39m Using tsup config: /Users/maximilianschon/skrift/packages/components/tsup.config.ts
+[34mCLI[39m Target: esnext
+[34mCJS[39m Build start
+[34mESM[39m Build start
+[32mESM[39m [1mdist/index.js [22m[32m48.00 B[39m
+[32mESM[39m ⚡️ Build success in 9ms
+[32mCJS[39m [1mdist/index.cjs [22m[32m1.07 KB[39m
+[32mCJS[39m ⚡️ Build success in 9ms
+DTS Build start
+DTS ⚡️ Build success in 843ms
+DTS dist/index.d.cts 32.00 B
+DTS dist/index.d.ts  32.00 B

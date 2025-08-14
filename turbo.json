@@ -1,0 +1,58 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local", "pnpm-lock.yaml"],
+  "globalEnv": [
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_TABLE_NAME",
+    "SPAM_ASSASSIN_HOST",
+    "SPAM_ASSASSIN_PORT"
+  ],
+  
+  "tasks": {
+    "build": {
+      "inputs": ["packages/**"],
+      "dependsOn": ["^build", "^postbuild"],
+      "outputs": ["dist/**"]
+    },
+    "postbuild": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "web#build": {
+      "dependsOn": ["^build", "^postbuild"],
+      "env": [
+        "SKRIFT_API_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "@skrift/preview-server#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "demo#build": {
+      "dependsOn": ["^build", "^postbuild"],
+      "outputs": [".skrift/**", "!.skrift/.next/cache/**"]
+    },
+    "skrift#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {},
+    "//#format": {},
+    "//#format:check": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:watch": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

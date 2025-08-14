@@ -1,0 +1,19 @@
+
+[0m[2m[35m$[0m [2m[1mtsc && NODE_ENV=production vite build --mode production && node ./copy-tailwind-types.mjs[0m
+[36mvite v6.3.4 [32mbuilding for production...[36m[39m
+[2K[1Gtransforming (1) [2msrc/index.ts[22m[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/expandTailwindAtRules.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/setupContextUtils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1G[33m[plugin vite:resolve] Module "url" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/setupContextUtils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1Gtransforming (43) [2mnode_modules/tailwindcss/lib/lib/substituteScreenAtRules.js[2K[1G[33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/cacheInvalidation.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/corePlugins.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1G[33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/corePlugins.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1Gtransforming (106) [2m../../node_modules/camelcase-css/index-es5.js[22m[2K[1Gtransforming (199) [2m../../node_modules/postcss-selector-parser/dist/util/index.[2K[1Gtransforming (318) [2m../../node_modules/postcss-nested/node_modules/postcss-sele[2K[1G[2K[1G[2K[1G[32m✓[39m 387 modules transformed.
+[2K[1Grendering chunks (1)...[2K[1G[32m
+[36m[vite:dts][32m Start generate declaration files...[39m
+[2K[1Gcomputing gzip size (0)...[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mindex.mjs  [39m[1m[33m681.52 kB[39m[22m[2m │ gzip: 148.88 kB[22m
+[32m[36m[vite:dts][32m Start rollup declaration files...[39m
+Analysis will use the bundled TypeScript version 5.8.2
+[32m[36m[vite:dts][32m Declaration files built in 4096ms.
+[39m
+[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mindex.js  [39m[1m[2m425.61 kB[22m[1m[22m[2m │ gzip: 124.13 kB[22m
+[32m✓ built in 5.20s[39m

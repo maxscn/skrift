@@ -1,0 +1,4 @@
+
+[0m[2m[35m$[0m [2m[1mskrift build[0m
+[?25l[1G[1G   [36m⠋[39m Starting build process...[1G[0K[?25h   [31m✖[39m Checking if ./pdfs folder exists
+[?25h[0m[31merror[0m[2m:[0m script [1m"build"[0m exited with code 1[0m

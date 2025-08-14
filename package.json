@@ -1,0 +1,27 @@
+{
+  "name": "skrift-monorepo",
+  "version": "0.0.0",
+  "description": "A self-hostable service for creating PDF documents.",
+  "main": "index.js",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxscn/skrift.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxscn/skrift/issues"
+  },
+  "homepage": "https://github.com/maxscn/skrift#readme",
+  "packageManager": "bun@1.2.19",
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
