@@ -4,16 +4,16 @@
 [2K[1Gtransforming (1) [2msrc/index.ts[22m[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/expandTailwindAtRules.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/setupContextUtils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [2K[1G[33m[plugin vite:resolve] Module "url" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/setupContextUtils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[2K[1Gtransforming (52) [2mnode_modules/tailwindcss/lib/featureFlags.js[22m[2K[1G[33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/cacheInvalidation.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/corePlugins.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1Gtransforming (38) [2mnode_modules/tailwindcss/lib/util/normalizeScreens.js[22m[2K[1G[33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/corePlugins.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [2K[1G[33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/corePlugins.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[2K[1Gtransforming (126) [2m../../node_modules/postcss-selector-parser/dist/tokenize.js[22m[2K[1Gtransforming (239) [2m../../node_modules/postcss-nested/node_modules/postcss-selector-parser/dist/selectors/node.js[22m[2K[1G[2K[1G[2K[1G[32m✓[39m 387 modules transformed.
+[2K[1G[33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/Users/maximilianschon/skrift/packages/tailwind/node_modules/tailwindcss/lib/lib/cacheInvalidation.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[2K[1Gtransforming (107) [2mnode_modules/tailwindcss/node_modules/postcss-selector-parser/dist/sortAscending.js[22m[2K[1Gtransforming (237) [2mnode_modules/tailwindcss/lib/util/formatVariantSelector.js[22m[2K[1G[2K[1G[2K[1G[32m✓[39m 387 modules transformed.
 [2K[1Grendering chunks (1)...[2K[1G[32m
 [36m[vite:dts][32m Start generate declaration files...[39m
 [2K[1Gcomputing gzip size (0)...[32m[36m[vite:dts][32m Start rollup declaration files...[39m
 Analysis will use the bundled TypeScript version 5.8.2
-[32m[36m[vite:dts][32m Declaration files built in 3684ms.
+[32m[36m[vite:dts][32m Declaration files built in 4055ms.
 [39m
 [2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mindex.mjs  [39m[1m[33m681.52 kB[39m[22m[2m │ gzip: 148.87 kB[22m
 [2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mindex.js  [39m[1m[2m425.61 kB[22m[1m[22m[2m │ gzip: 124.12 kB[22m
-[32m✓ built in 4.64s[39m
+[32m✓ built in 5.17s[39m

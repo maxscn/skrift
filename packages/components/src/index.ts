@@ -3,3 +3,4 @@ export * from "@skrift/tailwind";
 export * from "./unbreakable";
 export * from "./document";
 export * from "./page";
+export * from "./table";

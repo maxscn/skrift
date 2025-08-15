@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
 interface PageProps {
   children: React.ReactNode;
@@ -158,6 +158,112 @@ const applyMarginToIframeSrcDoc = (srcDoc: string, marginTop: number): string =>
   return srcDoc;
 };
 
+// Helper function to insert table headers at page breaks
+const insertTableHeaders = (
+  children: React.ReactNode,
+  spanningTables: Array<{
+    index: number,
+    tableInfo: {
+      table: React.ReactElement,
+      header: React.ReactElement | null,
+      estimatedHeight: number,
+      estimatedTop: number,
+      path: number[]
+    },
+    spanInfo: { spansMultiplePages: boolean, startPage: number, endPage: number, pageBreaks: number[] },
+    tableWithHeader?: { table: React.ReactElement, header: React.ReactElement | null, path: number[] }
+  }>
+): React.ReactNode => {
+  if (spanningTables.length === 0) return children;
+
+  const processNode = (node: React.ReactNode, path: number[] = []): React.ReactNode => {
+    if (!node) return node;
+    
+    if (React.isValidElement(node)) {
+      const props = node.props as any;
+      const pathKey = path.join('-');
+      
+      // Check if this is a table that spans multiple pages
+      const spanningTable = spanningTables.find(table => 
+        table.tableWithHeader && 
+        table.tableWithHeader.path.join('-') === pathKey
+      );
+
+      if (spanningTable && spanningTable.tableWithHeader?.header) {
+        console.log(`Adding header repetition to table at path ${pathKey}`);
+        
+        // Clone the table and modify its structure to include repeated headers
+        const tableHeader = spanningTable.tableWithHeader.header;
+        const tableBody = React.Children.toArray(props.children).find((child: any) => {
+          if (React.isValidElement(child)) {
+            const childProps = child.props as any;
+            return (childProps['data-skrift-table-body'] === 'true' || 
+                   (typeof childProps.className === 'string' && childProps.className.includes('skrift-table-body')));
+          }
+          return false;
+        });
+
+        if (tableBody && React.isValidElement(tableBody)) {
+          // Add CSS to repeat headers at page breaks
+          const enhancedTableStyle = {
+            ...props.style,
+            // CSS for table header repetition
+            '--skrift-table-header': 'repeat'
+          };
+
+          // Add a data attribute to mark this table for header repetition
+          return React.cloneElement(node, {
+            ...props,
+            style: enhancedTableStyle,
+            'data-skrift-table-repeat-header': 'true',
+            children: React.Children.map(props.children, (child: any) => {
+              if (React.isValidElement(child) && child === tableHeader) {
+                // Mark header for repetition
+                const childProps = child.props as any;
+                return React.cloneElement(child, {
+                  ...childProps,
+                  style: {
+                    ...childProps.style,
+                    // Ensure header appears at page breaks
+                    breakAfter: 'avoid',
+                    breakInside: 'avoid'
+                  },
+                  'data-skrift-repeat-header': 'true'
+                });
+              }
+              return child;
+            })
+          });
+        }
+      }
+
+      // Recursively process children
+      if (props.children) {
+        let processedChildren: React.ReactNode;
+        if (Array.isArray(props.children)) {
+          processedChildren = props.children.map((child: any, index: number) =>
+            processNode(child, [...path, index])
+          );
+        } else {
+          processedChildren = processNode(props.children, [...path, 0]);
+        }
+
+        return React.cloneElement(node, props, processedChildren);
+      }
+
+      return node;
+    } else if (Array.isArray(node)) {
+      return node.map((child: any, index: number) =>
+        processNode(child, [...path, index])
+      );
+    }
+
+    return node;
+  };
+
+  return processNode(children);
+};
+
 // Helper function to apply margin to unbreakable elements
 const applyMarginToUnbreakableElements = (
   children: React.ReactNode,
@@ -230,6 +336,416 @@ const applyMarginToUnbreakableElements = (
   return applyMargin(children);
 };
 
+// Helper function to find tables and extract their headers
+const findTablesWithHeaders = (children: React.ReactNode): {
+  table: React.ReactElement,
+  header: React.ReactElement | null,
+  path: number[]
+}[] => {
+  const tablesWithHeaders: {
+    table: React.ReactElement,
+    header: React.ReactElement | null,
+    path: number[]
+  }[] = [];
+
+  const traverse = (node: React.ReactNode, path: number[] = []) => {
+    if (!node) return;
+    
+    if (React.isValidElement(node)) {
+      const props = node.props as any;
+
+      // Check if this is a table element
+      if (props['data-skrift-table'] === 'true' || 
+          (typeof props.className === 'string' && props.className.includes('skrift-table'))) {
+        
+        // Extract header from table children
+        let header: React.ReactElement | null = null;
+        
+        const extractHeader = (tableChildren: React.ReactNode) => {
+          if (React.isValidElement(tableChildren)) {
+            const childProps = tableChildren.props as any;
+            if (childProps['data-skrift-table-header'] === 'true' || 
+                (typeof childProps.className === 'string' && childProps.className.includes('skrift-table-header'))) {
+              header = tableChildren;
+            }
+          } else if (Array.isArray(tableChildren)) {
+            tableChildren.forEach(extractHeader);
+          }
+        };
+
+        if (props.children) {
+          extractHeader(props.children);
+        }
+
+        tablesWithHeaders.push({ 
+          table: node, 
+          header, 
+          path 
+        });
+        return; // Don't traverse children of table
+      }
+
+      // Recursively check children
+      if (props.children) {
+        if (Array.isArray(props.children)) {
+          props.children.forEach((child: any, index: number) => {
+            traverse(child, [...path, index]);
+          });
+        } else {
+          traverse(props.children, [...path, 0]);
+        }
+      }
+    } else if (Array.isArray(node)) {
+      node.forEach((child: any, index: number) => {
+        traverse(child, [...path, index]);
+      });
+    }
+  };
+
+  traverse(children);
+  return tablesWithHeaders;
+};
+
+
+
+// Helper function to estimate table dimensions in React tree
+const estimateTableDimensions = (
+  children: React.ReactNode
+): Array<{
+  table: React.ReactElement,
+  header: React.ReactElement | null,
+  estimatedHeight: number,
+  estimatedTop: number,
+  path: number[]
+}> => {
+  const tables: Array<{
+    table: React.ReactElement,
+    header: React.ReactElement | null,
+    estimatedHeight: number,
+    estimatedTop: number,
+    path: number[]
+  }> = [];
+  
+  let currentY = 0;
+  
+  const traverse = (node: React.ReactNode, path: number[] = []) => {
+    if (!node) return;
+    
+    if (React.isValidElement(node)) {
+      const props = node.props as any;
+      const elementType = node.type;
+      
+      // Debug: Log all elements we encounter
+      if (typeof elementType === 'string') {
+        console.log(`Found element: ${elementType}`, {
+          className: props.className,
+          dataAttributes: Object.keys(props).filter(key => key.startsWith('data-')),
+          hasChildren: !!props.children
+        });
+      }
+      
+      // Check if this is a table element - expanded detection
+      const isTable = props['data-skrift-table'] === 'true' || 
+                     (typeof props.className === 'string' && props.className.includes('skrift-table')) ||
+                     elementType === 'table' ||
+                     (typeof elementType === 'string' && elementType.toLowerCase() === 'table');
+      
+      if (isTable) {
+        console.log('🎯 FOUND TABLE!', {
+          type: elementType,
+          className: props.className,
+          dataAttributes: Object.keys(props).filter(key => key.startsWith('data-')),
+          path: path.join('-')
+        });
+        
+        // Extract table header
+        let header: React.ReactElement | null = null;
+        let rowCount = 0;
+        let headerRowCount = 0;
+        
+        const analyzeTableContent = (child: React.ReactNode) => {
+          if (React.isValidElement(child)) {
+            const childProps = child.props as any;
+            const childType = child.type;
+            
+            // Found table header - expanded detection
+            const isTableHeader = childProps['data-skrift-table-header'] === 'true' || 
+                                 (typeof childProps.className === 'string' && childProps.className.includes('skrift-table-header')) ||
+                                 childType === 'thead' ||
+                                 (typeof childType === 'string' && childType.toLowerCase() === 'thead');
+                                 
+            if (isTableHeader) {
+              header = child;
+              console.log('📋 Found table header!', { type: childType, className: childProps.className });
+              // Count header rows
+              const countHeaderRows = (headerChild: React.ReactNode) => {
+                if (React.isValidElement(headerChild)) {
+                  const headerChildProps = headerChild.props as any;
+                  const headerChildType = headerChild.type;
+                  
+                  const isTableRow = headerChildProps['data-skrift-table-row'] === 'true' || 
+                                   (typeof headerChildProps.className === 'string' && headerChildProps.className.includes('skrift-table-row')) ||
+                                   headerChildType === 'tr' ||
+                                   (typeof headerChildType === 'string' && headerChildType.toLowerCase() === 'tr');
+                                   
+                  if (isTableRow) {
+                    headerRowCount++;
+                    console.log('📊 Found header row!', { type: headerChildType, count: headerRowCount });
+                  }
+                  if (headerChildProps.children) {
+                    if (Array.isArray(headerChildProps.children)) {
+                      headerChildProps.children.forEach(countHeaderRows);
+                    } else {
+                      countHeaderRows(headerChildProps.children);
+                    }
+                  }
+                } else if (Array.isArray(headerChild)) {
+                  headerChild.forEach(countHeaderRows);
+                }
+              };
+              countHeaderRows(child);
+            }
+            
+            // Found table body - count total rows
+            const isTableBody = childProps['data-skrift-table-body'] === 'true' || 
+                               (typeof childProps.className === 'string' && childProps.className.includes('skrift-table-body')) ||
+                               childType === 'tbody' ||
+                               (typeof childType === 'string' && childType.toLowerCase() === 'tbody');
+                               
+            if (isTableBody) {
+              console.log('📝 Found table body!', { type: childType, className: childProps.className });
+              const countRows = (bodyChild: React.ReactNode) => {
+                if (React.isValidElement(bodyChild)) {
+                  const bodyChildProps = bodyChild.props as any;
+                  const bodyChildType = bodyChild.type;
+                  
+                  const isTableRow = bodyChildProps['data-skrift-table-row'] === 'true' || 
+                                   (typeof bodyChildProps.className === 'string' && bodyChildProps.className.includes('skrift-table-row')) ||
+                                   bodyChildType === 'tr' ||
+                                   (typeof bodyChildType === 'string' && bodyChildType.toLowerCase() === 'tr');
+                                   
+                  if (isTableRow) {
+                    rowCount++;
+                    console.log('📋 Found body row!', { type: bodyChildType, count: rowCount });
+                  }
+                  if (bodyChildProps.children) {
+                    if (Array.isArray(bodyChildProps.children)) {
+                      bodyChildProps.children.forEach(countRows);
+                    } else {
+                      countRows(bodyChildProps.children);
+                    }
+                  }
+                } else if (Array.isArray(bodyChild)) {
+                  bodyChild.forEach(countRows);
+                }
+              };
+              countRows(child);
+            }
+            
+            if (childProps.children) {
+              if (Array.isArray(childProps.children)) {
+                childProps.children.forEach(analyzeTableContent);
+              } else {
+                analyzeTableContent(childProps.children);
+              }
+            }
+          } else if (Array.isArray(child)) {
+            child.forEach(analyzeTableContent);
+          }
+        };
+        
+        analyzeTableContent(props.children);
+        
+        // Estimate table height (rough calculation)
+        const estimatedRowHeight = 40; // Average row height in pixels
+        const totalRows = headerRowCount + rowCount;
+        const estimatedHeight = Math.max(100, totalRows * estimatedRowHeight);
+        
+        tables.push({
+          table: node,
+          header,
+          estimatedHeight,
+          estimatedTop: currentY,
+          path
+        });
+        
+        console.log(`Table found: ${totalRows} rows (${headerRowCount} header, ${rowCount} body), estimated height: ${estimatedHeight}px at Y: ${currentY}px`);
+        
+        currentY += estimatedHeight;
+        return; // Don't traverse children as we've analyzed them
+      }
+      
+      // For non-table elements, estimate their contribution to height
+      const elementHeight = estimateElementHeight(node);
+      currentY += elementHeight;
+      
+      // Recursively check children for non-table elements
+      if (props.children) {
+        if (Array.isArray(props.children)) {
+          props.children.forEach((child: any, index: number) => {
+            traverse(child, [...path, index]);
+          });
+        } else {
+          traverse(props.children, [...path, 0]);
+        }
+      }
+    } else if (Array.isArray(node)) {
+      node.forEach((child: any, index: number) => {
+        traverse(child, [...path, index]);
+      });
+    }
+  };
+  
+  traverse(children);
+  return tables;
+};
+
+// Helper function to estimate element height
+const estimateElementHeight = (element: React.ReactElement): number => {
+  const props = element.props as any;
+  const tagName = element.type;
+  
+  // Basic height estimates based on element type
+  if (typeof tagName === 'string') {
+    switch (tagName) {
+      case 'h1': return 60;
+      case 'h2': return 50;
+      case 'h3': return 40;
+      case 'h4': case 'h5': case 'h6': return 35;
+      case 'p': return 25;
+      case 'div': return props.children ? 20 : 10;
+      case 'span': return 20;
+      case 'br': return 20;
+      default: return 25;
+    }
+  }
+  
+  return 25; // Default for custom components
+};
+
+// Helper function to check if a table spans multiple pages using virtual dimensions
+const checkTablePageSpanVirtual = (
+  tableInfo: {
+    table: React.ReactElement,
+    header: React.ReactElement | null,
+    estimatedHeight: number,
+    estimatedTop: number,
+    path: number[]
+  },
+  pageHeight: number
+): {
+  spansMultiplePages: boolean,
+  startPage: number,
+  endPage: number,
+  pageBreaks: number[]
+} => {
+  const relativeTop = tableInfo.estimatedTop;
+  const relativeBottom = relativeTop + tableInfo.estimatedHeight;
+
+  const startPage = Math.floor(relativeTop / pageHeight) + 1;
+  const endPage = Math.floor((relativeBottom - 1) / pageHeight) + 1;
+  
+  // Calculate page break positions within the table
+  const pageBreaks: number[] = [];
+  for (let page = startPage; page < endPage; page++) {
+    const pageBreakPosition = page * pageHeight - relativeTop;
+    pageBreaks.push(pageBreakPosition);
+  }
+
+  return {
+    spansMultiplePages: startPage !== endPage,
+    startPage,
+    endPage,
+    pageBreaks
+  };
+};
+
+// Helper function to create page content with repeated table headers
+const createPageContentWithTableHeaders = (
+  originalContent: React.ReactNode,
+  pageIndex: number,
+  pageHeight: number,
+  spanningTables: Array<{
+    index: number,
+    tableInfo: {
+      table: React.ReactElement,
+      header: React.ReactElement | null,
+      estimatedHeight: number,
+      estimatedTop: number,
+      path: number[]
+    },
+    spanInfo: { spansMultiplePages: boolean, startPage: number, endPage: number, pageBreaks: number[] },
+    tableWithHeader: { table: React.ReactElement, header: React.ReactElement | null, path: number[] } | undefined
+  }>
+): React.ReactNode => {
+  const currentPage = pageIndex + 1;
+  
+  // Find tables that need headers on this page (tables that continue from previous page)
+  const tablesNeedingHeaders = spanningTables.filter(item => {
+    return (item.tableWithHeader?.header || item.tableInfo.header) && 
+           currentPage > item.spanInfo.startPage && 
+           currentPage <= item.spanInfo.endPage;
+  });
+
+  if (tablesNeedingHeaders.length === 0) {
+    return originalContent;
+  }
+
+  console.log(`Page ${currentPage}: Adding headers for ${tablesNeedingHeaders.length} tables`);
+
+  // Calculate where headers should be inserted
+  const headerInsertions: Array<{
+    yPosition: number,
+    header: React.ReactElement,
+    tableIndex: number
+  }> = [];
+
+  tablesNeedingHeaders.forEach(item => {
+    const header = item.tableWithHeader?.header || item.tableInfo.header;
+    if (header) {
+      // Calculate the relative position of table within container using estimated dimensions
+      const relativeTableTop = item.tableInfo.estimatedTop;
+      const pageStartY = (currentPage - 1) * pageHeight;
+      
+      // Position header at the beginning of current page where table continues
+      const headerY = Math.max(0, pageStartY - relativeTableTop);
+      
+      headerInsertions.push({
+        yPosition: headerY,
+        header: header,
+        tableIndex: item.index
+      });
+
+      console.log(`Table ${item.index}: Header at Y=${headerY}, Page ${currentPage}, TableTop=${relativeTableTop}, PageStart=${pageStartY}`);
+    }
+  });
+
+  // Create content with headers inserted
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {originalContent}
+      {headerInsertions.map((insertion) => (
+        <div
+          key={`table-header-${insertion.tableIndex}-page-${pageIndex}`}
+          style={{
+            position: 'absolute',
+            top: `${insertion.yPosition}px`,
+            left: 0,
+            right: 0,
+            zIndex: 100,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            borderBottom: '1px solid #e5e7eb'
+          }}
+        >
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: 0, padding: 0 }}>
+            {React.cloneElement(insertion.header)}
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // Helper function to recursively find unbreakable elements and iframes
 const findUnbreakableElements = (children: React.ReactNode): {
   element: React.ReactElement,
@@ -290,6 +806,8 @@ const findUnbreakableElements = (children: React.ReactNode): {
   traverse(children);
   return unbreakableElements;
 };
+
+
 
 // Helper function to get element bounds by className
 const getUnbreakableElementBounds = (container: HTMLElement, className: string = 'skrift-unbreakable'): DOMRect[] => {
@@ -455,6 +973,10 @@ export const PagedContent: React.FC<PagedContentProps> = ({
       const unbreakableElements = findUnbreakableElements(children);
       console.log('Found unbreakable elements:', unbreakableElements.map(item => item.element));
 
+      // Find all tables with headers
+      const tablesWithHeaders = findTablesWithHeaders(children);
+      console.log('Found tables with headers:', tablesWithHeaders.length);
+
       measureRef.current.style.height = 'auto';
       measureRef.current.style.overflow = 'visible';
 
@@ -510,6 +1032,60 @@ export const PagedContent: React.FC<PagedContentProps> = ({
             border: getComputedStyle(measureRef.current).border
           });
           console.log(`Page height: ${effectivePageHeight}px`);
+          console.log('=== TABLE PAGE SPAN ANALYSIS ===');
+          // Analyze tables in React tree with estimated dimensions
+          const tableAnalysis = estimateTableDimensions(children);
+          console.log('Table analysis:', tableAnalysis);
+
+          const spanningTables = tableAnalysis
+            .map((tableInfo, index) => ({
+              index,
+              tableInfo,
+              spanInfo: checkTablePageSpanVirtual(tableInfo, effectivePageHeight),
+              tableWithHeader: tablesWithHeaders.find(t => t.table === tableInfo.table) || tablesWithHeaders[index]
+            }))
+            .filter(item => item.spanInfo.spansMultiplePages);
+
+          if (spanningTables.length > 0) {
+            console.log(`🔍 ${spanningTables.length} tables span multiple pages:`,
+              spanningTables.map(item => ({
+                tableIndex: item.index + 1,
+                pageRange: `${item.spanInfo.startPage}-${item.spanInfo.endPage}`,
+                height: `${item.tableInfo.estimatedHeight}px`,
+                hasHeader: item.tableWithHeader?.header !== null,
+                pageBreaks: item.spanInfo.pageBreaks
+              }))
+            );
+
+            // Create pages with repeated table headers
+            const pagesWithHeaders: React.ReactNode[] = [];
+            for (let i = 0; i < pagesNeeded; i++) {
+              const basePageContent = (
+                <div
+                  style={{
+                    transform: `translateY(-${i * effectivePageHeight}px)`,
+                    width: '100%',
+                    position: 'relative'
+                  }}
+                >
+                  {processedChildren}
+                </div>
+              );
+
+              const pageContentWithHeaders = createPageContentWithTableHeaders(
+                basePageContent,
+                i,
+                effectivePageHeight,
+                spanningTables
+              );
+
+              pagesWithHeaders.push(pageContentWithHeaders);
+            }
+
+            setPages(pagesWithHeaders);
+            return; // Exit early to use pages with headers
+          }
+
           console.log('=== UNBREAKABLE ELEMENTS PAGE SPAN ANALYSIS ===');
           console.log(`Regular elements: ${regularUnbreakableBounds.length}, Iframe elements: ${iframeElementsData.length}`);
 
@@ -556,6 +1132,7 @@ export const PagedContent: React.FC<PagedContentProps> = ({
             unbreakableElements
               .filter(item => !item.isIframe)
               .forEach((reactElement, reactIndex) => {
+                console.log("reactElement", reactElement)
                 const domElement = domUnbreakables[reactIndex];
                 if (domElement) {
                   domToReactElementMap.set(domElement, {
@@ -607,7 +1184,7 @@ export const PagedContent: React.FC<PagedContentProps> = ({
                 if (adjustedMarginNeeded <= effectivePageHeight) {
                   // Apply to all iframes that contain unbreakable elements
                   iframeElements.forEach((iframeElement) => {
-                    if (iframeElement && iframeElement.path) {
+                    if (iframeElement && iframeElement.path?.length > 0) {
                       const pathKey = iframeElement.path.join('-');
                       // Only set if not already set (avoid overwriting with smaller values)
                       const existingMargin = iframeMargins.get(pathKey) || 0;
@@ -658,8 +1235,9 @@ export const PagedContent: React.FC<PagedContentProps> = ({
               }
             });
 
-            // Apply margins to children
-            const updatedChildren = applyMarginToUnbreakableElements(children, unbreakableMargins, iframeMargins);
+            // Apply table header repetition and margins to children
+            const childrenWithHeaders = insertTableHeaders(children, spanningTables);
+            const updatedChildren = applyMarginToUnbreakableElements(childrenWithHeaders, unbreakableMargins, iframeMargins);
             setProcessedChildren(updatedChildren);
             setHasAppliedMargins(true);
 
@@ -728,15 +1306,12 @@ export const PagedContent: React.FC<PagedContentProps> = ({
       const checkHeight = () => {
         const height = measureRef.current?.scrollHeight ?? 0;
         if (height !== lastHeight ) {
-          console.log(height)
           lastHeight = height;
           frame = requestAnimationFrame(checkHeight);
           correctInARow = 0;
         } else if (correctInARow >= 10) {
-          console.log("measuring")
           measureAndPaginate();
         } else {
-          console.log("correct in a row" + correctInARow)
           correctInARow += 1;
           frame = requestAnimationFrame(checkHeight);
 
