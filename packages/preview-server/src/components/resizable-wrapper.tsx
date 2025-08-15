@@ -1,11 +1,11 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '../utils';
-import { distributeElementsToPages } from '../utils/pagination';
+import {PagedContent} from './paged-content';
 
 type Direction = 'north' | 'south' | 'east' | 'west';
 
-interface PresetDimensions {
+export interface PresetDimensions {
   name: string;
   width: number;
   height: number;
@@ -51,96 +51,6 @@ export const makeIframeDocumentBubbleEvents = (iframe: HTMLIFrameElement) => {
   };
 };
 
-const PagedContent = ({ 
-  children, 
-  preset, 
-  srcDoc 
-}: { 
-  children: React.ReactNode; 
-  preset: PresetDimensions;
-  srcDoc?: string;
-}) => {
-  const [pages, setPages] = useState<Array<{ id: number; content: string }>>([]);
-  const measureRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    if (!srcDoc || !measureRef.current) return;
-
-    const iframe = measureRef.current;
-    const handlePagination = () => {
-      const doc = iframe.contentDocument;
-      if (!doc) {
-        console.log('No contentDocument available');
-        return;
-      }
-
-      // Wait for body to be available
-      if (!doc.body) {
-        console.log('No body element, retrying...');
-        setTimeout(handlePagination, 50);
-        return;
-      }
-
-      const pages = distributeElementsToPages(doc, preset, srcDoc);
-      setPages(pages);
-    };
-
-    iframe.onload = () => {
-      console.log('Iframe loaded, measuring in 300ms...');
-      setTimeout(handlePagination, 300);
-    };
-    
-    // Also try immediately in case the iframe is already loaded
-    if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
-      console.log('Iframe already loaded, measuring immediately...');
-      setTimeout(handlePagination, 100);
-    }
-  }, [srcDoc, preset.height, preset.width]);
-
-
-  console.log(pages.length)
-  if (pages.length === 0) {
-    return (
-      <div 
-        className="bg-white shadow-lg"
-        style={{ width: preset.width, height: preset.height }}
-      >
-        <iframe
-          ref={measureRef}
-          srcDoc={srcDoc}
-          style={{ width: '100%', height: '100%', border: 'none' }}
-          className="opacity-0 absolute pointer-events-none"
-        />
-        {children}
-      </div>
-    );
-  }
-  
-  return (
-    <div className="flex flex-col gap-4">
-      {pages.map((page) => (
-        <div
-          key={page.id}
-          className="bg-white shadow-lg relative"
-          style={{ width: preset.width, height: preset.height, marginTop: "1rem", marginBottom: "1rem" }}
-        >
-          <div className="absolute top-2 right-2 bg-black/10 px-2 py-1 rounded text-xs text-gray-600">
-            Page {page.id}
-          </div>
-          
-          <iframe
-            srcDoc={page.content}
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              border: 'none'
-            }}
-          />
-        </div>
-      ))}
-    </div>
-  );
-};
 
 export const ResizableWrapper = ({
   width,
@@ -204,15 +114,17 @@ export const ResizableWrapper = ({
   if (isPresetMode) {
     const iframe = children as React.ReactElement<React.IframeHTMLAttributes<HTMLIFrameElement>>;
     const srcDoc = iframe?.props?.srcDoc;
-
+    console.log(iframe.props.children);
     return (
       <div
         {...rest}
         className={cn('mx-auto my-auto', rest.className)}
       >
-        <PagedContent preset={preset} srcDoc={srcDoc}>
+        <PagedContent pageHeight={preset.height} pageWidth={preset.width} gapSize={20}>
           {children}
         </PagedContent>
+        <div id="measure-layer" style={{display: "hidden"}} />
+
       </div>
     );
   }

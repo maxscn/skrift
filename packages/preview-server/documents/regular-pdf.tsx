@@ -1,8 +1,11 @@
 import {
+  Document,
   Tailwind,
+  Unbreakable
 } from '@skrift/components';
 
 import { Button } from "../../../examples/shadcn/components/ui/button";
+import Head from 'next/head';
 interface RegularPDFProps {
   validationCode: string;
 }
@@ -12,6 +15,7 @@ const baseUrl = '';
 export const RegularPDF = ({
   validationCode,
 }: RegularPDFProps) => (
+  <Document>
     <Tailwind
       config={{
         theme: {
@@ -202,24 +206,24 @@ export const RegularPDF = ({
         `}
       </style>
       </head>
-      <body className="mx-auto my-auto px-2 font-sans">
-        <main className="p-10">
-          <Button>Click me </Button>
-          <div className="bg-red-500 h-100 w-full mt-4" style={{ height: 1000}}>
+
+          <div className="bg-red-500 w-full" style={{ height: 1123}}>
+            <p className="text-white mt-0">This is a test paragraph inside a red box.</p>
+          </div>
+          <div className="bg-red-500 w-full mt-4" style={{ height: 1000}}>
             <p className="text-white">This is a test paragraph inside a red box.</p>
           </div>
-          <div className="bg-red-500 h-100 w-full mt-4" style={{ height: 1000}}>
+          <div className="bg-red-500 w-full mt-4" style={{ height: 1000}}>
             <p className="text-white">This is a test paragraph inside a red box.</p>
           </div>
-          <div className="bg-red-500 h-100 w-full mt-4" style={{ height: 1000}}>
-            <p className="text-white">This is a test paragraph inside a red box.</p>
-          </div>
-          <div className="bg-red-500 h-100 w-full mt-4" style={{ height: 1000}}>
-            <p className="text-white">This is a test paragraph inside a red box.</p>
-          </div>
-        </main>
-      </body>
+          <Unbreakable>
+
+            <div className="bg-red-500 w-full mt-4" style={{ height: 1000}}>
+              <p className="text-white">This is a test paragraph inside a red box.</p>
+            </div>
+          </Unbreakable>
     </Tailwind>
+    </Document>
 );
 
 

@@ -17,6 +17,8 @@ import { getLintingSources, loadLintingRowsFrom } from '../../../utils/linting';
 import { loadStream } from '../../../utils/load-stream';
 import { documentsDirectoryAbsolutePath, isBuilding } from '../../env';
 import Preview from './preview';
+import { Print } from '../../../components/send';
+import PrintPreview from './print-preview';
 
 export const dynamicParams = true;
 
@@ -122,6 +124,8 @@ This is most likely not an issue with the preview server. Maybe there was a typo
           /> */}
         </Suspense>
       </Shell>
+      <PrintPreview documentTitle={path.basename(documentPath)} />
+
     </PreviewProvider>
   );
 };

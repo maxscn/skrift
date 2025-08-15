@@ -1,22 +1,22 @@
-$ bun ./scripts/build-preview-server.mts
-   ▲ Next.js 15.4.6
+
+[0m[2m[35m$[0m [2m[1mbun ./scripts/build-preview-server.mts[0m
+   [1m[38;2;173;127;168m▲ Next.js 15.4.6[39m[22m
    - Environments: .env.local
 
-   Creating an optimized production build ...
- ✓ Compiled successfully in 7.0s
-   Linting and checking validity of types ...
-Failed to compile.
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1m✓[22m[39m Compiled successfully in 1000ms
+[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39mFailed to compile.
 
-../../examples/shadcn/components/ui/button.tsx:5:20
-Type error: Cannot find module '@/lib/utils' or its corresponding type declarations.
+./documents/regular-pdf.tsx:3:3
+Type error: Module '"@skrift/components"' has no exported member 'Unbreakable'.
 
-[0m [90m 3 |[39m [36mimport[39m { cva[33m,[39m type [33mVariantProps[39m } [36mfrom[39m [32m"class-variance-authority"[39m
- [90m 4 |[39m
-[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { cn } [36mfrom[39m [32m"@/lib/utils"[39m
- [90m   |[39m                    [31m[1m^[22m[39m
- [90m 6 |[39m
- [90m 7 |[39m [36mconst[39m buttonVariants [33m=[39m cva(
- [90m 8 |[39m   [32m"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"[39m[33m,[39m[0m
-Next.js build worker exited with code: 1 and signal: null
-next build failed with exit code 1
-error: script "build" exited with code 1
+[0m [90m 1 |[39m [36mimport[39m {
+ [90m 2 |[39m   [33mTailwind[39m[33m,[39m
+[31m[1m>[22m[39m[90m 3 |[39m   [33mUnbreakable[39m
+ [90m   |[39m   [31m[1m^[22m[39m
+ [90m 4 |[39m } [36mfrom[39m [32m'@skrift/components'[39m[33m;[39m
+ [90m 5 |[39m
+ [90m 6 |[39m [36mimport[39m { [33mButton[39m } [36mfrom[39m [32m"../../../examples/shadcn/components/ui/button"[39m[33m;[39m[0m
+[2K[1G[?25hNext.js build worker exited with code: 1 and signal: null
+[?25l [36m.[39m [?25h[0m[31mnext build failed with exit code 1[0m
+[0m[31merror[0m[2m:[0m script [1m"build"[0m exited with code 1[0m

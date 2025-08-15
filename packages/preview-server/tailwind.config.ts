@@ -30,6 +30,12 @@ const config: Config = {
       './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
   },
+  extend: {
+    screens: {
+      print: { raw: 'print' },
+      screen: { raw: 'screen' },
+    },
+  },
   theme: {
     extend: {
       backgroundImage: {

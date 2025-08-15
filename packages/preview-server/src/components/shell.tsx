@@ -31,7 +31,7 @@ export const Shell = ({ children, currentDocumentOpenSlug }: ShellProps) => {
     >
       <div
         className={
-          'flex h-[4.375rem] items-center justify-between border-slate-6 border-b px-6 lg:hidden'
+          'flex h-[4.375rem] items-center justify-between border-slate-6 border-b px-6 lg:hidden print:hidden'
         }
       >
         <div className="flex h-[4.375rem] items-center">
@@ -62,11 +62,11 @@ export const Shell = ({ children, currentDocumentOpenSlug }: ShellProps) => {
           </svg>
         </button>
       </div>
-      <div className="w-[100dvw] flex h-[calc(100dvh-4.375rem)] lg:h-[100dvh]">
+      <div className="print:hidden w-[100dvw] flex h-[calc(100dvh-4.375rem)] lg:h-[100dvh]">
         <React.Suspense>
           <Sidebar
             className={cn(
-              'fixed top-[4.375rem] left-0 z-[9999] h-full max-h-full w-full max-w-full will-change-auto [transition:width_0.2s_ease-in-out]',
+              'print:hidden fixed top-[4.375rem] left-0 z-[9999] h-full max-h-full w-full max-w-full will-change-auto [transition:width_0.2s_ease-in-out]',
               'lg:static lg:inline-block lg:z-auto lg:max-h-full lg:w-[16rem]',
               {
                 '-translate-x-full lg:translate-x-0': sidebarToggled,

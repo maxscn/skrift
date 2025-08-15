@@ -5,7 +5,7 @@ import { use, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Toaster } from 'sonner';
 import { useDebouncedCallback } from 'use-debounce';
-import { Topbar } from '../../../components';
+import { MeasuredIframe, Topbar } from '../../../components';
 import { CodeContainer } from '../../../components/code-container';
 import {
   makeIframeDocumentBubbleEvents,
@@ -83,7 +83,8 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   const { toggled: toolbarToggled } = useToolbarState();
   return (
     <>
-      <Topbar documentTitle={documentTitle}>
+
+      <Topbar documentTitle={documentTitle} className="print:hidden">
         <ViewSizeControls
           setViewHeight={(height) => {
             setHeight(height);
@@ -111,7 +112,6 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           </div>
         ) : null}
       </Topbar>
-
       <div
         {...props}
         className={cn(
@@ -124,8 +124,8 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           const observer = new ResizeObserver((entry) => {
             const [elementEntry] = entry;
             if (elementEntry) {
-            //  setMaxWidth(elementEntry.contentRect.width);
-            //  setMaxHeight(elementEntry.contentRect.height);
+              //  setMaxWidth(elementEntry.contentRect.width);
+              //  setMaxHeight(elementEntry.contentRect.height);
             }
           });
 
@@ -144,6 +144,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           <>
             {activeView === 'preview' && (
               <ResizableWrapper
+                className="print:hidden"
                 minHeight={minHeight}
                 minWidth={minWidth}
                 maxHeight={maxHeight}
@@ -169,20 +170,32 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
                 } : undefined}
                 isPaginationEnabled={!!currentPreset}
               >
-                <iframe
-                  className=" rounded-lg bg-white [color-scheme:auto]"
-                  ref={(iframe) => {
-                    if (iframe) {
-                      return makeIframeDocumentBubbleEvents(iframe);
-                    }
-                  }}
-                  srcDoc={renderedDocumentMetadata.markup}
-                  style={{
-                    width: `${width}px`,
-                    height: `${height}px`,
-                  }}
-                  title={documentTitle}
-                />
+                {!!currentPreset ?
+                  <MeasuredIframe
+                    className=" rounded-lg bg-white [color-scheme:auto]"
+                    ref={(iframe) => {
+                      if (iframe) {
+                        return makeIframeDocumentBubbleEvents(iframe);
+                      }
+                    }}
+                    minHeight={minHeight}
+                    style={{ width: `${width}px` }}
+                    srcDoc={renderedDocumentMetadata.markup} />
+
+                  : <iframe
+                    className=" rounded-lg bg-white [color-scheme:auto]"
+                    ref={(iframe) => {
+                      if (iframe) {
+                        return makeIframeDocumentBubbleEvents(iframe);
+                      }
+                    }}
+                    srcDoc={renderedDocumentMetadata.markup}
+                    style={{
+                      width: `${width}px`,
+                      height: `${height}px`,
+                    }}
+                    title={documentTitle}
+                  />}
               </ResizableWrapper>
             )}
 
