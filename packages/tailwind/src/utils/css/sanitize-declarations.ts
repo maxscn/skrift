@@ -1,7 +1,7 @@
 import type { AtRule, Root, Rule } from 'postcss';
 
 /**
- * Meant to do all the things necessary, in a per-declaration basis, to have the best email client
+ * Meant to do all the things necessary, in a per-declaration basis, to have the best document client
  * support possible.
  *
  * Currently it only converts all `rgb` declaration values that use a space-based syntax

@@ -1,5 +1,5 @@
 {
-  "name": "email-dev",
+  "name": "document-dev",
   "version": "0.0.1",
   "bin": "index.js",
   "private": true,

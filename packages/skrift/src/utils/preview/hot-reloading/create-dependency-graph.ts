@@ -113,8 +113,8 @@ export const createDependencyGraph = async (directory: string) => {
           /*
             path.resolve resolves paths differently from what imports on javascript do.
 
-            So if we wouldn't do this, for an email at "/path/to/email.tsx" with a dependency path of "./other-email" 
-            would end up going into /path/to/email.tsx/other-email instead of /path/to/other-email which is the
+            So if we wouldn't do this, for an document at "/path/to/document.tsx" with a dependency path of "./other-document" 
+            would end up going into /path/to/document.tsx/other-document instead of /path/to/other-document which is the
             one the import is meant to go to
           */
           path.dirname(filePath),

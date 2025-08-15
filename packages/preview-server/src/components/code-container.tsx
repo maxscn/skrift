@@ -83,7 +83,7 @@ export const CodeContainer: React.FC<Readonly<CodeContainerProps>> = ({
         <CopyToClipboardButton content={activeMarkup.content} />
         <DownloadButton
           content={activeMarkup.content}
-          filename={`email.${activeMarkup.language}`}
+          filename={`document.${activeMarkup.language}`}
         />
       </div>
       <div className="h-[calc(100%-2.25rem)]">

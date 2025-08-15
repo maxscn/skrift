@@ -4,9 +4,9 @@ import path from 'node:path';
 import logSymbols from 'log-symbols';
 import ora from 'ora';
 import {
-  type EmailsDirectory,
-  getEmailsDirectoryMetadata,
-} from '../utils/get-emails-directory-metadata.js';
+  type DocumentsDirectory,
+  getDocumentsDirectoryMetadata,
+} from '../utils/get-documents-directory-metadata.js';
 import { getPreviewServerLocation } from '../utils/get-preview-server-location.js';
 import { registerSpinnerAutostopping } from '../utils/register-spinner-autostopping.js';
 
@@ -72,22 +72,22 @@ const npmInstall = async (
 };
 
 const setNextEnvironmentVariablesForBuild = async (
-  emailsDirRelativePath: string,
+  documentsDirRelativePath: string,
   builtPreviewAppPath: string,
 ) => {
   const nextConfigContents = `
 const path = require('path');
-const emailsDirRelativePath = path.normalize('${emailsDirRelativePath}');
+const documentsDirRelativePath = path.normalize('${documentsDirRelativePath}');
 const userProjectLocation = '${process.cwd()}';
 /** @type {import('next').NextConfig} */
 module.exports = {
   env: {
     NEXT_PUBLIC_IS_BUILDING: 'true',
-    EMAILS_DIR_RELATIVE_PATH: emailsDirRelativePath,
-    EMAILS_DIR_ABSOLUTE_PATH: path.resolve(userProjectLocation, emailsDirRelativePath),
+    DOCUMENTS_DIR_RELATIVE_PATH: documentsDirRelativePath,
+    DOCUMENTS_DIR_ABSOLUTE_PATH: path.resolve(userProjectLocation, documentsDirRelativePath),
     USER_PROJECT_LOCATION: userProjectLocation
   },
-  // this is needed so that the code for building emails works properly
+  // this is needed so that the code for building documents works properly
   webpack: (
     /** @type {import('webpack').Configuration & { externals: string[] }} */
     config,
@@ -117,29 +117,29 @@ module.exports = {
   );
 };
 
-const getEmailSlugsFromEmailDirectory = (
-  emailDirectory: EmailsDirectory,
-  emailsDirectoryAbsolutePath: string,
+const getDocumentSlugsFromDocumentDirectory = (
+  documentDirectory: DocumentsDirectory,
+  documentsDirectoryAbsolutePath: string,
 ) => {
-  const directoryPathRelativeToEmailsDirectory = emailDirectory.absolutePath
-    .replace(emailsDirectoryAbsolutePath, '')
+  const directoryPathRelativeToDocumentsDirectory = documentDirectory.absolutePath
+    .replace(documentsDirectoryAbsolutePath, '')
     .trim();
 
   const slugs = [] as Array<string>[];
-  emailDirectory.emailFilenames.forEach((filename) =>
+  documentDirectory.documentFilenames.forEach((filename) =>
     slugs.push(
       path
-        .join(directoryPathRelativeToEmailsDirectory, filename)
+        .join(directoryPathRelativeToDocumentsDirectory, filename)
         .split(path.sep)
         // sometimes it gets empty segments due to trailing slashes
         .filter((segment) => segment.length > 0),
     ),
   );
-  emailDirectory.subDirectories.forEach((directory) => {
+  documentDirectory.subDirectories.forEach((directory) => {
     slugs.push(
-      ...getEmailSlugsFromEmailDirectory(
+      ...getDocumentSlugsFromDocumentDirectory(
         directory,
-        emailsDirectoryAbsolutePath,
+        documentsDirectoryAbsolutePath,
       ),
     );
   });
@@ -147,19 +147,19 @@ const getEmailSlugsFromEmailDirectory = (
   return slugs;
 };
 
-// we do this because otherwise it won't be able to find the emails
+// we do this because otherwise it won't be able to find the documents
 // after build
-const forceSSGForEmailPreviews = async (
-  emailsDirPath: string,
+const forceSSGForDocumentPreviews = async (
+  documentsDirPath: string,
   builtPreviewAppPath: string,
 ) => {
-  const emailDirectoryMetadata =
+  const documentDirectoryMetadata =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    (await getEmailsDirectoryMetadata(emailsDirPath))!;
+    (await getDocumentsDirectoryMetadata(documentsDirPath))!;
 
-  const parameters = getEmailSlugsFromEmailDirectory(
-    emailDirectoryMetadata,
-    emailsDirPath,
+  const parameters = getDocumentSlugsFromDocumentDirectory(
+    documentDirectoryMetadata,
+    documentsDirPath,
   ).map((slug) => ({ slug }));
 
   const removeForceDynamic = async (filePath: string) => {
@@ -210,8 +210,8 @@ const updatePackageJson = async (builtPreviewAppPath: string) => {
   // We remove this one to avoid having resolve issues on our demo build process.
   // This is only used in the `export` command so it's irrelevant to have it here.
   //
-  // See `src/actions/render-email-by-path` for more info on how we render the
-  // email templates without `@skrift/render` being installed.
+  // See `src/actions/render-document-by-path` for more info on how we render the
+  // document templates without `@skrift/render` being installed.
   delete packageJson.devDependencies['@skrift/render'];
   delete packageJson.devDependencies['@skrift/components'];
   delete packageJson.scripts.prepare;
@@ -224,7 +224,7 @@ const updatePackageJson = async (builtPreviewAppPath: string) => {
 };
 
 export const build = async ({
-  dir: emailsDirRelativePath,
+  dir: documentsDirRelativePath,
   packageManager,
 }: Args) => {
   try {
@@ -236,13 +236,13 @@ export const build = async ({
     }).start();
     registerSpinnerAutostopping(spinner);
 
-    spinner.text = `Checking if ${emailsDirRelativePath} folder exists`;
-    if (!fs.existsSync(emailsDirRelativePath)) {
+    spinner.text = `Checking if ${documentsDirRelativePath} folder exists`;
+    if (!fs.existsSync(documentsDirRelativePath)) {
       process.exit(1);
     }
 
-    const emailsDirPath = path.join(process.cwd(), emailsDirRelativePath);
-    const staticPath = path.join(emailsDirPath, 'static');
+    const documentsDirPath = path.join(process.cwd(), documentsDirRelativePath);
+    const staticPath = path.join(documentsDirPath, 'static');
 
     const builtPreviewAppPath = path.join(process.cwd(), '.skrift');
 
@@ -280,12 +280,12 @@ export const build = async ({
     spinner.text =
       'Setting Next environment variables for preview app to work properly';
     await setNextEnvironmentVariablesForBuild(
-      emailsDirRelativePath,
+      documentsDirRelativePath,
       builtPreviewAppPath,
     );
 
-    spinner.text = 'Setting server side generation for the email preview pages';
-    await forceSSGForEmailPreviews(emailsDirPath, builtPreviewAppPath);
+    spinner.text = 'Setting server side generation for the document preview pages';
+    await forceSSGForDocumentPreviews(documentsDirPath, builtPreviewAppPath);
 
     spinner.text = "Updating package.json's build and start scripts";
     await updatePackageJson(builtPreviewAppPath);

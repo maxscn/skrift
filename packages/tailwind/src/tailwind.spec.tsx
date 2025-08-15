@@ -60,18 +60,18 @@ import { Tailwind } from '.';
 //               or copy and paste this URL into your browser:{' '}
 //               <Link
 //                 className="other text-blue-600 no-underline"
-//                 href="https://react.email"
+//                 href="https://react.document"
 //               >
-//                 https://react.email
+//                 https://react.document
 //               </Link>
 //             </p>
 //             <p className="text-[14px] text-black leading-[24px]">
 //               or copy and paste this URL into your browser:{' '}
 //               <Link
 //                 className="text-blue-600 no-underline"
-//                 href="https://react.email"
+//                 href="https://react.document"
 //               >
-//                 https://react.email
+//                 https://react.document
 //               </Link>
 //             </p>
 //           </Tailwind>
@@ -152,7 +152,7 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     const EmailTemplate = () => {
+//     const DocumentTemplate = () => {
 //       return (
 //         <Wrapper>
 //           <div className="mt-[100px] text-[50px] leading-[1]">Hello world</div>
@@ -161,7 +161,7 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     const actualOutput = await render(EmailTemplate());
+//     const actualOutput = await render(DocumentTemplate());
 
 //     expect(actualOutput).toMatchSnapshot();
 //   });
@@ -185,7 +185,7 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     const EmailTemplate = () => {
+//     const DocumentTemplate = () => {
 //       return (
 //         <Wrapper>
 //           <div className="mt-[100px] text-[50px] leading-[1]">Hello world</div>
@@ -194,13 +194,13 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     const actualOutput = await render(EmailTemplate());
+//     const actualOutput = await render(DocumentTemplate());
 
 //     expect(actualOutput).toMatchSnapshot();
 //   });
 
 //   it('should work with Heading component', async () => {
-//     const EmailTemplate = () => {
+//     const DocumentTemplate = () => {
 //       return (
 //         <Tailwind>
 //           Hello
@@ -210,7 +210,7 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     expect(await render(<EmailTemplate />)).toMatchSnapshot();
+//     expect(await render(<DocumentTemplate />)).toMatchSnapshot();
 //   });
 
 //   it('should work with components that use React.forwardRef', async () => {
@@ -231,7 +231,7 @@ import { Tailwind } from '.';
 //     });
 //     Brand.displayName = 'Brand';
 
-//     const EmailTemplate = () => {
+//     const DocumentTemplate = () => {
 //       return (
 //         <Wrapper>
 //           <div className="mt-[100px] text-[50px] leading-[1]">Hello world</div>
@@ -240,7 +240,7 @@ import { Tailwind } from '.';
 //       );
 //     };
 
-//     const actualOutput = await render(EmailTemplate());
+//     const actualOutput = await render(DocumentTemplate());
 
 //     expect(actualOutput).toMatchSnapshot();
 //   });
@@ -433,7 +433,7 @@ describe('non-inlinable styles', () => {
       );
     };
 
-    function renderComplexEmailWithoutHead() {
+    function renderComplexDocumentWithoutHead() {
       return render(
         <Tailwind>
           <div className="bg-red-300">
@@ -446,12 +446,12 @@ describe('non-inlinable styles', () => {
     }
 
     await expect(
-      renderComplexEmailWithoutHead,
+      renderComplexDocumentWithoutHead,
     ).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('should work with relatively complex media query utilities', async () => {
-    const Email = () => {
+    const Document = () => {
       return (
         <Tailwind>
           {/* <Head /> */}
@@ -460,7 +460,7 @@ describe('non-inlinable styles', () => {
       );
     };
 
-    expect(await render(<Email />)).toMatchSnapshot();
+    expect(await render(<Document />)).toMatchSnapshot();
   });
 
   it('should throw an error when used without a <head/>', async () => {

@@ -2,7 +2,7 @@
 import * as Collapsible from '@radix-ui/react-collapsible';
 import * as React from 'react';
 import { cn } from '../../utils';
-import type { EmailsDirectory } from '../../utils/get-emails-directory-metadata';
+import type { DocumentsDirectory } from '../../utils/get-documents-directory-metadata';
 import { Heading } from '../heading';
 import { IconArrowDown } from '../icons/icon-arrow-down';
 import { IconFolder } from '../icons/icon-folder';
@@ -10,29 +10,29 @@ import { IconFolderOpen } from '../icons/icon-folder-open';
 import { FileTreeDirectoryChildren } from './file-tree-directory-children';
 
 interface SidebarDirectoryProps {
-  emailsDirectoryMetadata: EmailsDirectory;
+  documentsDirectoryMetadata: DocumentsDirectory;
   className?: string;
-  currentEmailOpenSlug?: string;
+  currentDocumentOpenSlug?: string;
 }
 
 const persistedOpenDirectories = new Set<string>();
 
 export const FileTreeDirectory = ({
-  emailsDirectoryMetadata: directoryMetadata,
+  documentsDirectoryMetadata: directoryMetadata,
   className,
-  currentEmailOpenSlug,
+  currentDocumentOpenSlug,
 }: SidebarDirectoryProps) => {
-  const doesDirectoryContainCurrentEmailOpen = currentEmailOpenSlug
-    ? currentEmailOpenSlug.includes(directoryMetadata.relativePath)
+  const doesDirectoryContainCurrentDocumentOpen = currentDocumentOpenSlug
+    ? currentDocumentOpenSlug.includes(directoryMetadata.relativePath)
     : false;
 
   const isEmpty =
-    directoryMetadata.emailFilenames.length === 0 &&
+    directoryMetadata.documentFilenames.length === 0 &&
     directoryMetadata.subDirectories.length === 0;
 
   const [open, setOpen] = React.useState(
     persistedOpenDirectories.has(directoryMetadata.absolutePath) ||
-      doesDirectoryContainCurrentEmailOpen,
+      doesDirectoryContainCurrentDocumentOpen,
   );
 
   return (
@@ -82,8 +82,8 @@ export const FileTreeDirectory = ({
       </Collapsible.Trigger>
       {!isEmpty ? (
         <FileTreeDirectoryChildren
-          currentEmailOpenSlug={currentEmailOpenSlug}
-          emailsDirectoryMetadata={directoryMetadata}
+          currentDocumentOpenSlug={currentDocumentOpenSlug}
+          documentsDirectoryMetadata={directoryMetadata}
           open={open}
         />
       ) : null}

@@ -4,18 +4,18 @@ import { Suspense } from 'react';
 import {
   type CompatibilityCheckingResult,
   checkCompatibility,
-} from '../../../actions/email-validation/check-compatibility';
-import { getEmailPathFromSlug } from '../../../actions/get-email-path-from-slug';
-import { renderEmailByPath } from '../../../actions/render-email-by-path';
+} from '../../../actions/document-validation/check-compatibility';
+import { getDocumentPathFromSlug } from '../../../actions/get-document-path-from-slug';
+import { renderDocumentByPath } from '../../../actions/render-document-by-path';
 import { Shell } from '../../../components/shell';
 import { Toolbar } from '../../../components/toolbar';
 import type { LintingRow } from '../../../components/toolbar/linter';
 import type { SpamCheckingResult } from '../../../components/toolbar/spam-assassin';
 import { PreviewProvider } from '../../../contexts/preview';
-import { getEmailsDirectoryMetadata } from '../../../utils/get-emails-directory-metadata';
+import { getDocumentsDirectoryMetadata } from '../../../utils/get-documents-directory-metadata';
 import { getLintingSources, loadLintingRowsFrom } from '../../../utils/linting';
 import { loadStream } from '../../../utils/load-stream';
-import { emailsDirectoryAbsolutePath, isBuilding } from '../../env';
+import { documentsDirectoryAbsolutePath, isBuilding } from '../../env';
 import Preview from './preview';
 
 export const dynamicParams = true;
@@ -32,24 +32,24 @@ const Page = async ({
   params: Promise<PreviewParams>;
 }) => {
   const params = await paramsPromise;
-  // will come in here as segments of a relative path to the email
+  // will come in here as segments of a relative path to the document
   // ex: ['authentication', 'verify-password.tsx']
   const slug = decodeURIComponent(params.slug.join('/'));
-  const emailsDirMetadata = await getEmailsDirectoryMetadata(
-    emailsDirectoryAbsolutePath,
+  const documentsDirMetadata = await getDocumentsDirectoryMetadata(
+    documentsDirectoryAbsolutePath,
   );
 
-  if (typeof emailsDirMetadata === 'undefined') {
+  if (typeof documentsDirMetadata === 'undefined') {
     throw new Error(
-      `Could not find the emails directory specified under ${emailsDirectoryAbsolutePath}!
+      `Could not find the documents directory specified under ${documentsDirectoryAbsolutePath}!
 
 This is most likely not an issue with the preview server. Maybe there was a typo on the "--dir" flag?`,
     );
   }
 
-  let emailPath: string;
+  let documentPath: string;
   try {
-    emailPath = await getEmailPathFromSlug(slug);
+    documentPath = await getDocumentPathFromSlug(slug);
   } catch (exception) {
     if (exception instanceof Error) {
       console.warn(exception.message);
@@ -58,20 +58,19 @@ This is most likely not an issue with the preview server. Maybe there was a typo
     throw exception;
   }
 
-  const serverEmailRenderingResult = await renderEmailByPath(emailPath);
+  const serverDocumentRenderingResult = await renderDocumentByPath(documentPath);
 
-  let spamCheckingResult: SpamCheckingResult | undefined;
   let lintingRows: LintingRow[] | undefined;
   let compatibilityCheckingResults: CompatibilityCheckingResult[] | undefined;
 
   if (isBuilding) {
-    if ('error' in serverEmailRenderingResult) {
-      throw new Error(serverEmailRenderingResult.error.message, {
-        cause: serverEmailRenderingResult.error,
+    if ('error' in serverDocumentRenderingResult) {
+      throw new Error(serverDocumentRenderingResult.error.message, {
+        cause: serverDocumentRenderingResult.error,
       });
     }
     const lintingSources = getLintingSources(
-      serverEmailRenderingResult.markup,
+      serverDocumentRenderingResult.markup,
       '',
     );
     lintingRows = [];
@@ -92,51 +91,35 @@ This is most likely not an issue with the preview server. Maybe there was a typo
     compatibilityCheckingResults = [];
     for await (const result of loadStream(
       await checkCompatibility(
-        serverEmailRenderingResult.reactMarkup,
-        emailPath,
+        serverDocumentRenderingResult.reactMarkup,
+        documentPath,
       ),
     )) {
       compatibilityCheckingResults.push(result);
     }
 
-    const response = await fetch('https://react.email/api/check-spam', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        html: serverEmailRenderingResult.markup,
-        plainText: serverEmailRenderingResult.plainText,
-      }),
-    });
-    const responseBody = (await response.json()) as
-      | { error: string }
-      | SpamCheckingResult;
-    if ('error' in responseBody) {
-      throw new Error(`Failed doing Spam Check. ${responseBody.error}`, {
-        cause: responseBody,
-      });
-    }
 
-    spamCheckingResult = responseBody;
+
   }
 
   return (
     <PreviewProvider
-      emailSlug={slug}
-      emailPath={emailPath}
-      serverRenderingResult={serverEmailRenderingResult}
+      documentSlug={slug}
+      documentPath={documentPath}
+      serverRenderingResult={serverDocumentRenderingResult}
     >
-      <Shell currentEmailOpenSlug={slug}>
+      <Shell currentDocumentOpenSlug={slug}>
         {/* This suspense is so that this page doesn't throw warnings */}
         {/* on the build of the preview server de-opting into         */}
         {/* client-side rendering on build                            */}
         <Suspense>
-          <Preview emailTitle={path.basename(emailPath)} />
+          <Preview documentTitle={path.basename(documentPath)} />
 
-          <Toolbar
+          {/* <Toolbar
             serverLintingRows={lintingRows}
             serverSpamCheckingResult={spamCheckingResult}
             serverCompatibilityResults={compatibilityCheckingResults}
-          />
+          /> */}
         </Suspense>
       </Shell>
     </PreviewProvider>

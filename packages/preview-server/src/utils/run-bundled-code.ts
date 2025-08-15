@@ -46,9 +46,9 @@ export const runBundledCode = (
       // webpack warnings like:
       //
       // Import trace for requested module:
-      // ./src/utils/get-email-component.tsx
+      // ./src/utils/get-document-component.tsx
       // ./src/app/page.tsx
-      //  ⚠ ./src/utils/get-email-component.tsx
+      //  ⚠ ./src/utils/get-document-component.tsx
       // Critical dependency: the request of a dependency is an expression
     },
     process,

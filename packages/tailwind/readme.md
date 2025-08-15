@@ -1,14 +1,14 @@
-![Skrift Tailwind cover](https://react.email/static/covers/tailwind.png)
+![Skrift Tailwind cover](https://react.document/static/covers/tailwind.png)
 
 <div align="center"><strong>@skrift/tailwind</strong></div>
-<div align="center">A React component to wrap emails with Tailwind CSS.</div>
+<div align="center">A React component to wrap documents with Tailwind CSS.</div>
 <br />
 <div align="center">
-<a href="https://react.email">Website</a> 
+<a href="https://react.document">Website</a> 
 <span> · </span>
-<a href="https://react.email">Documentation</a> 
+<a href="https://react.document">Documentation</a> 
 <span> · </span>
-<a href="https://react.email">Twitter</a>
+<a href="https://react.document">Twitter</a>
 </div>
 
 ## Install
@@ -29,13 +29,13 @@ npm install @skrift/tailwind -E
 
 ## Getting started
 
-Add the component around your email body content.
+Add the component around your document body content.
 
 ```jsx
 import { Button } from "@skrift/button";
 import { Tailwind } from "@skrift/tailwind";
 
-const Email = () => {
+const Document = () => {
   return (
     <Tailwind
       config={{
@@ -63,21 +63,21 @@ const Email = () => {
 
 These are some things you will need to keep in mind if you are improving the Tailwind component
 with things that might influence certain decisions we have made for better
-email client support that have been made also in the past by other contributors but not documented
+document client support that have been made also in the past by other contributors but not documented
 which ended up causing us to have these problems and need to rediscover the best decisions again.
 
 ### The inlining of all styles
 
 This is one of the most important because this is not one of the use cases this is
 the main focus point of using the Tailwind component. The support for defining styles with tags
-and using [classes is not the best](https://www.caniemail.com/features/html-style/).
+and using [classes is not the best](https://www.canidocument.com/features/html-style/).
 
 This though can't be used the same for media queries so we do append the media queries
 and the class names associated with them on a `<style>` tag on the `<head>` element.
 
 ### The treatment for Tailwind's CSS variables
 
-Emails don't really have great support for CSS variables,
+Documents don't really have great support for CSS variables,
 so we needed to use a custom postcss plugin alongisde Tailwind to resolve
 all of these variables. When the plugin finds a CSS Variable that it cannot resolve,
 it leaves it without any changes.
@@ -115,9 +115,9 @@ on that.
 
 ## Support
 
-This component was tested using the most popular email clients.
+This component was tested using the most popular document clients.
 
-| <img src="https://react.email/static/icons/gmail.svg" width="48px" height="48px" alt="Gmail logo"> | <img src="https://react.email/static/icons/apple-mail.svg" width="48px" height="48px" alt="Apple Mail"> | <img src="https://react.email/static/icons/outlook.svg" width="48px" height="48px" alt="Outlook logo"> | <img src="https://react.email/static/icons/yahoo-mail.svg" width="48px" height="48px" alt="Yahoo! Mail logo"> | <img src="https://react.email/static/icons/hey.svg" width="48px" height="48px" alt="HEY logo"> | <img src="https://react.email/static/icons/superhuman.svg" width="48px" height="48px" alt="Superhuman logo"> |
+| <img src="https://react.document/static/icons/gmail.svg" width="48px" height="48px" alt="Gmail logo"> | <img src="https://react.document/static/icons/apple-mail.svg" width="48px" height="48px" alt="Apple Mail"> | <img src="https://react.document/static/icons/outlook.svg" width="48px" height="48px" alt="Outlook logo"> | <img src="https://react.document/static/icons/yahoo-mail.svg" width="48px" height="48px" alt="Yahoo! Mail logo"> | <img src="https://react.document/static/icons/hey.svg" width="48px" height="48px" alt="HEY logo"> | <img src="https://react.document/static/icons/superhuman.svg" width="48px" height="48px" alt="Superhuman logo"> |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Gmail ✔                                                                                           | Apple Mail ✔                                                                                           | Outlook ✔                                                                                             | Yahoo! Mail ✔                                                                                                | HEY ✔                                                                                         | Superhuman ✔                                                                                                |
 

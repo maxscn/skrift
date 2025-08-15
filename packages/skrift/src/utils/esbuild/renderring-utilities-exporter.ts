@@ -4,7 +4,7 @@ import type { Loader, PluginBuild, ResolveOptions } from 'esbuild';
 import { escapeStringForRegex } from './escape-string-for-regex.js';
 
 /**
- * Made to export the `render` function out of the user's email template
+ * Made to export the `render` function out of the user's document template
  * so that issues like https://github.com/maxscn/skrift/issues/649 don't
  * happen.
  *
@@ -12,16 +12,16 @@ import { escapeStringForRegex } from './escape-string-for-regex.js';
  * to avoid mismatches.
  *
  * This avoids multiple versions of React being involved, i.e., the version
- * in the CLI vs. the version the user has on their emails.
+ * in the CLI vs. the version the user has on their documents.
  */
-export const renderingUtilitiesExporter = (emailTemplates: string[]) => ({
+export const renderingUtilitiesExporter = (documentTemplates: string[]) => ({
   name: 'rendering-utilities-exporter',
   setup: (b: PluginBuild) => {
     b.onLoad(
       {
         filter: new RegExp(
-          emailTemplates
-            .map((emailPath) => escapeStringForRegex(emailPath))
+          documentTemplates
+            .map((documentPath) => escapeStringForRegex(documentPath))
             .join('|'),
         ),
       },
@@ -29,7 +29,7 @@ export const renderingUtilitiesExporter = (emailTemplates: string[]) => ({
         return {
           contents: `${await fs.readFile(pathToFile, 'utf8')};
           export { render } from 'skrift-module-that-will-export-render'
-          export { createElement as reactEmailCreateReactElement } from 'react';
+          export { createElement as reactDocumentCreateReactElement } from 'react';
         `,
           loader: path.extname(pathToFile).slice(1) as Loader,
         };
@@ -54,7 +54,7 @@ export const renderingUtilitiesExporter = (emailTemplates: string[]) => ({
         result = await b.resolve('@skrift/components', options);
         if (result.errors.length > 0 && result.errors[0]) {
           result.errors[0].text =
-            "Failed trying to import `render` from either `@skrift/render` or `@skrift/components` to be able to render your email template.\n Maybe you don't have either of them installed?";
+            "Failed trying to import `render` from either `@skrift/render` or `@skrift/components` to be able to render your document template.\n Maybe you don't have either of them installed?";
         }
         return result;
       },

@@ -1,6 +1,6 @@
 import type { Node } from 'postcss';
 import React from 'react';
-import type { EmailElementProps } from '../../tailwind';
+import type { DocumentElementProps } from '../../tailwind';
 import { sanitizeClassName } from '../compatibility/sanitize-class-name';
 import { makeInlineStylesFor } from '../css/make-inline-styles-for';
 import { sanitizeDeclarations } from '../css/sanitize-declarations';
@@ -9,10 +9,10 @@ import { isComponent } from '../react/is-component';
 import type { setupTailwind } from './setup-tailwind';
 
 export const cloneElementWithInlinedStyles = (
-  element: React.ReactElement<EmailElementProps>,
+  element: React.ReactElement<DocumentElementProps>,
   tailwind: ReturnType<typeof setupTailwind>,
 ) => {
-  const propsToOverwrite: Partial<EmailElementProps> = {};
+  const propsToOverwrite: Partial<DocumentElementProps> = {};
 
   let nonInlinableClasses: string[] = [];
   let nonInlineStyleNodes: Node[] = [];

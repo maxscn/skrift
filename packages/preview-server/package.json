@@ -4,7 +4,7 @@
   "description": "A live preview of your pdf files right in your browser.",
   "scripts": {
     "build": "bun ./scripts/build-preview-server.mts",
-    "caniemail:fetch": "bun ./scripts/fill-caniemail-data.mts",
+    "canidocument:fetch": "bun ./scripts/fill-canidocument-data.mts",
     "clean": "rm -rf dist",
     "dev": "bun ./scripts/dev.mts",
     "dev:seed": "bun ./scripts/seed.mts",

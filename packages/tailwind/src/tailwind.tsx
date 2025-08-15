@@ -28,7 +28,7 @@ export interface TailwindProps {
   config?: TailwindConfig;
 }
 
-export interface EmailElementProps {
+export interface DocumentElementProps {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -43,7 +43,7 @@ export const Tailwind: React.FC<TailwindProps> = ({ children, config }) => {
   let hasNonInlineStylesToApply = false as boolean;
 
   let mappedChildren: React.ReactNode = mapReactTree(children, (node) => {
-    if (React.isValidElement<EmailElementProps>(node)) {
+    if (React.isValidElement<DocumentElementProps>(node)) {
       const {
         elementWithInlinedStyles,
         nonInlinableClasses,
@@ -73,7 +73,7 @@ export const Tailwind: React.FC<TailwindProps> = ({ children, config }) => {
         return node;
       }
 
-      if (React.isValidElement<EmailElementProps>(node)) {
+      if (React.isValidElement<DocumentElementProps>(node)) {
         if (node.type === 'head') {
           hasAppliedNonInlineStyles = true;
 

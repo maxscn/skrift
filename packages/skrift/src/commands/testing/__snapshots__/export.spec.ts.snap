@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`email export 1`] = `
+exports[`document export 1`] = `
 "<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="en">
   <head>
@@ -161,8 +161,8 @@ exports[`email export 1`] = `
               <span style="color:rgb(0,0,0)"></span>
               <!-- -->located in<!-- -->
               <span style="color:rgb(0,0,0)"></span>. If you were not expecting
-              this invitation, you can ignore this email. If you are concerned
-              about your account&#x27;s safety, please reply to this email to
+              this invitation, you can ignore this document. If you are concerned
+              about your account&#x27;s safety, please reply to this document to
               get in touch with us.
             </p>
           </td>

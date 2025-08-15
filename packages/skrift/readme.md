@@ -1,14 +1,14 @@
-![Skrift cover](https://react.email/static/covers/skrift.png)
+![Skrift cover](https://react.document/static/covers/skrift.png)
 
 <div align="center"><strong>Skrift</strong></div>
-<div align="center">The next generation of writing emails.<br />High-quality, unstyled components for creating emails.</div>
+<div align="center">The next generation of writing documents.<br />High-quality, unstyled components for creating documents.</div>
 <br />
 <div align="center">
-<a href="https://react.email">Website</a> 
+<a href="https://react.document">Website</a> 
 <span> · </span>
 <a href="https://github.com/maxscn/skrift">GitHub</a> 
 <span> · </span>
-<a href="https://react.email/discord">Discord</a>
+<a href="https://react.document/discord">Discord</a>
 </div>
 
 ## Getting started
@@ -16,24 +16,24 @@
 To get started, open a new shell and run:
 
 ```sh
-npx create-email
+npx create-document
 ```
 
-This will create a new folder called `emails` with a few email templates.
+This will create a new folder called `documents` with a few document templates.
 
 ## Commands
 
-### `email dev`
+### `document dev`
 
-Starts a local development server that will watch your files and automatically rebuild your email when you make changes.
+Starts a local development server that will watch your files and automatically rebuild your document when you make changes.
 
 ```sh
 npx skrift dev
 ```
 
-### `email export`
+### `document export`
 
-Generates the plain HTML files of your emails into a `out` directory.
+Generates the plain HTML files of your documents into a `out` directory.
 
 ```sh
 npx skrift export
@@ -52,7 +52,7 @@ pnpm link ./dev -g
 ### 2. Run the CLI
 
 ```sh
-email-dev [command] [flags]
+document-dev [command] [flags]
 ```
 
 ## License

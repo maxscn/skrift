@@ -16,11 +16,11 @@ import {
 } from '@skrift/components';
 import { Tailwind } from '@skrift/tailwind';
 
-interface VercelInviteUserEmailProps {
+interface VercelInviteUserDocumentProps {
   username?: string;
   userImage?: string;
   invitedByUsername?: string;
-  invitedByEmail?: string;
+  invitedByDocument?: string;
   teamName?: string;
   teamImage?: string;
   inviteLink?: string;
@@ -32,17 +32,17 @@ const baseUrl = import.meta.env.VERCEL_URL
   ? `https://${import.meta.env.VERCEL_URL}`
   : '';
 
-export const VercelInviteUserEmail = ({
+export const VercelInviteUserDocument = ({
   username,
   userImage,
   invitedByUsername,
-  invitedByEmail,
+  invitedByDocument,
   teamName,
   teamImage,
   inviteLink,
   inviteFromIp,
   inviteFromLocation,
-}: VercelInviteUserEmailProps) => {
+}: VercelInviteUserDocumentProps) => {
   const previewText = `Join ${invitedByUsername} on Vercel`;
 
   return (
@@ -70,10 +70,10 @@ export const VercelInviteUserEmail = ({
             <Text className="text-[14px] text-black leading-[24px]">
               <strong>{invitedByUsername}</strong> (
               <Link
-                href={`mailto:${invitedByEmail}`}
+                href={`mailto:${invitedByDocument}`}
                 className="text-blue-600 no-underline"
               >
-                {invitedByEmail}
+                {invitedByDocument}
               </Link>
               ) has invited you to the <strong>{teamName}</strong> team on{' '}
               <strong>Vercel</strong>.
@@ -127,9 +127,9 @@ export const VercelInviteUserEmail = ({
               sent from <span className="text-black">{inviteFromIp}</span>{' '}
               located in{' '}
               <span className="text-black">{inviteFromLocation}</span>. If you
-              were not expecting this invitation, you can ignore this email. If
+              were not expecting this invitation, you can ignore this document. If
               you are concerned about your account's safety, please reply to
-              this email to get in touch with us.
+              this document to get in touch with us.
             </Text>
           </Container>
         </Body>
@@ -138,14 +138,14 @@ export const VercelInviteUserEmail = ({
   );
 };
 
-VercelInviteUserEmail.PreviewProps = {
+VercelInviteUserDocument.PreviewProps = {
   username: 'alanturing',
   userImage: `${baseUrl}/static/vercel-user.png`,
   invitedByUsername: 'Alan',
-  invitedByEmail: 'alan.turing@example.com',
+  invitedByDocument: 'alan.turing@example.com',
   teamName: 'Enigma',
   teamImage: `${baseUrl}/static/vercel-team.png`,
   inviteLink: 'https://vercel.com/teams/invite/foo',
   inviteFromIp: '204.13.186.218',
   inviteFromLocation: 'São Paulo, Brazil',
-} as VercelInviteUserEmailProps;
+} as VercelInviteUserDocumentProps;

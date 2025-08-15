@@ -42,8 +42,8 @@ export default function TeamInvite({
               {inviterName} has invited you to join {teamName} as a {role}.
             </Text>
             <Text>
-              Skrift helps teams collaborate on email templates and manage
-              their email campaigns effectively.
+              Skrift helps teams collaborate on document templates and manage
+              their document campaigns effectively.
             </Text>
             <Text className="mb-6">
               Click the button below to accept the invitation and get started:
@@ -61,7 +61,7 @@ export default function TeamInvite({
             <Text className="mt-6">- Skrift team</Text>
             <Hr style={{ borderTopColor: '#404040' }} />
             <Text className="text-[#606060] font-bold">
-              Skrift, 999 React St, Email City, EC 12345
+              Skrift, 999 React St, Document City, EC 12345
             </Text>
           </Container>
         </Body>
@@ -73,6 +73,6 @@ export default function TeamInvite({
 TeamInvite.PreviewProps = {
   inviterName: 'John Doe',
   teamName: 'Marketing Team',
-  inviteLink: 'https://react.email/join/team/123',
+  inviteLink: 'https://react.document/join/team/123',
   role: 'Editor',
 } satisfies TeamInviteProps;

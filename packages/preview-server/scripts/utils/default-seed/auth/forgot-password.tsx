@@ -41,7 +41,7 @@ export default function ForgotPassword({
               expire in {expiryTime}.
             </Text>
             <Text className="mb-6">
-              If you didn't request this, you can safely ignore this email.
+              If you didn't request this, you can safely ignore this document.
             </Text>
             <Row className="w-full">
               <Column className="w-full">
@@ -56,7 +56,7 @@ export default function ForgotPassword({
             <Text className="mt-6">- Skrift team</Text>
             <Hr style={{ borderTopColor: '#404040' }} />
             <Text className="text-[#606060] font-bold">
-              Skrift, 999 React St, Email City, EC 12345
+              Skrift, 999 React St, Document City, EC 12345
             </Text>
           </Container>
         </Body>
@@ -66,6 +66,6 @@ export default function ForgotPassword({
 }
 
 ForgotPassword.PreviewProps = {
-  resetLink: 'https://react.email/reset-password/123',
+  resetLink: 'https://react.document/reset-password/123',
   expiryTime: '1 hour',
 } satisfies ForgotPasswordProps;

@@ -55,17 +55,17 @@ export default function WebhooksFailed({ date, error }: WebhooksFailedProps) {
               If you have any questions or need assistance, please reach out to
               us at{' '}
               <a
-                href="mailto:support@react.email"
+                href="mailto:support@react.document"
                 className="text-cyan-300 underline"
               >
-                support@react.email
+                support@react.document
               </a>
               .
             </Text>
             <Text className="mt-6">- Skrift team</Text>
             <Hr style={{ borderTopColor: '#404040' }} />
             <Text className="text-[#606060] font-bold">
-              Skrift, 999 React St, Email City, EC 12345
+              Skrift, 999 React St, Document City, EC 12345
             </Text>
           </Container>
         </Body>

@@ -1,7 +1,7 @@
 {
   "name": "@skrift/render",
   "version": "0.0.1",
-  "description": "Transform React components into HTML email templates",
+  "description": "Transform React components into HTML document templates",
   "sideEffects": false,
   "main": "./dist/browser/index.js",
   "module": "./dist/browser/index.mjs",
@@ -78,7 +78,7 @@
   },
   "keywords": [
     "react",
-    "email"
+    "document"
   ],
   "engines": {
     "node": ">=18.0.0"

@@ -1,5 +1,5 @@
 This is a NextJS project bootstrapped with `create-next-app@latest` that contains a Tailwind
-email using most of the features we provide that will be auto-built on testing to
+document using most of the features we provide that will be auto-built on testing to
 make sure this new release works properly with the latest version of NextJS when being built.
 
 We do this testing so that things are more reliable and this couldn't be done using pnpm

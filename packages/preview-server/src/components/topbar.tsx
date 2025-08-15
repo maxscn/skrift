@@ -8,12 +8,12 @@ import { ShellContext } from './shell';
 import { Tooltip } from './tooltip';
 
 interface TopbarProps extends React.ComponentProps<'header'> {
-  emailTitle: string;
+  documentTitle: string;
   children: React.ReactNode;
 }
 
 export const Topbar = ({
-  emailTitle,
+  documentTitle,
   children,
   className,
   ...props
@@ -46,7 +46,7 @@ export const Topbar = ({
           </Tooltip>
           <div className="hidden items-center overflow-hidden text-center lg:flex">
             <Heading as="h2" className="truncate" size="2" weight="medium">
-              {emailTitle}
+              {documentTitle}
             </Heading>
           </div>
         </div>

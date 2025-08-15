@@ -69,7 +69,7 @@ export default function Changelog({ receiver, date, changes }: ChangelogProps) {
             <Text className="mt-6">- Skrift team</Text>
             <Hr style={{ borderTopColor: '#404040' }} />
             <Text className="text-[#606060] font-bold">
-              Skrift, 999 React St, Email City, EC 12345
+              Skrift, 999 React St, Document City, EC 12345
             </Text>
           </Container>
         </Body>
@@ -87,7 +87,7 @@ Changelog.PreviewProps = {
     ],
     fixes: [
       'Fixed a bug that caused the app to crash on startup',
-      'Resolved an issue with email notifications not being sent',
+      'Resolved an issue with document notifications not being sent',
     ],
     improvements: [
       'Improved performance of the application by optimizing database queries',

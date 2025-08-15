@@ -1,5 +1,5 @@
-import { checkImages } from '../actions/email-validation/check-images';
-import { checkLinks } from '../actions/email-validation/check-links';
+import { checkImages } from '../actions/document-validation/check-images';
+import { checkLinks } from '../actions/document-validation/check-links';
 import type { LintingRow } from '../components/toolbar/linter';
 import { loadStream } from './load-stream';
 

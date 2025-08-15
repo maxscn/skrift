@@ -1,16 +1,16 @@
 import * as Collapsible from '@radix-ui/react-collapsible';
 import * as React from 'react';
-import type { EmailsDirectory } from '../../utils/get-emails-directory-metadata';
+import type { DocumentsDirectory } from '../../utils/get-documents-directory-metadata';
 import { FileTreeDirectoryChildren } from './file-tree-directory-children';
 
 interface FileTreeProps {
-  currentEmailOpenSlug: string | undefined;
-  emailsDirectoryMetadata: EmailsDirectory;
+  currentDocumentOpenSlug: string | undefined;
+  documentsDirectoryMetadata: DocumentsDirectory;
 }
 
 export const FileTree = ({
-  currentEmailOpenSlug,
-  emailsDirectoryMetadata,
+  currentDocumentOpenSlug,
+  documentsDirectoryMetadata,
 }: FileTreeProps) => {
   return (
     <div className="flex w-full h-full flex-col lg:w-full lg:min-w-[14.5rem]">
@@ -18,8 +18,8 @@ export const FileTree = ({
         <Collapsible.Root open>
           <React.Suspense>
             <FileTreeDirectoryChildren
-              currentEmailOpenSlug={currentEmailOpenSlug}
-              emailsDirectoryMetadata={emailsDirectoryMetadata}
+              currentDocumentOpenSlug={currentDocumentOpenSlug}
+              documentsDirectoryMetadata={documentsDirectoryMetadata}
               isRoot
               open
             />

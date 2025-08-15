@@ -1,7 +1,7 @@
 import prettyBytes from 'pretty-bytes';
 import { Children, useRef, useState } from 'react';
-import type { ImageCheckingResult } from '../../actions/email-validation/check-images';
-import type { LinkCheckingResult } from '../../actions/email-validation/check-links';
+import type { ImageCheckingResult } from '../../actions/document-validation/check-images';
+import type { LinkCheckingResult } from '../../actions/document-validation/check-links';
 import { cn, sanitize } from '../../utils';
 import { getLintingSources, loadLintingRowsFrom } from '../../utils/linting';
 import { IconWarning } from '../icons/icon-warning';

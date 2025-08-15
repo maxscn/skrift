@@ -1,5 +1,5 @@
 .skrift
-./emails
-./emails/static
+./documents
+./documents/static
 node_modules
 .turbo

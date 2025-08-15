@@ -3,7 +3,7 @@ A modern way to build PDF documents.
 
 ## Introduction
 
-Skrift is for PDFs what skrift is for creating emails. It provides a set of components, a preview server, a self-hostable service for generating PDFs.
+Skrift is for PDFs what skrift is for creating documents. It provides a set of components, a preview server, a self-hostable service for generating PDFs.
 
 ## Why
 

@@ -11,19 +11,19 @@ import ora, { type Ora } from 'ora';
 import type React from 'react';
 import { renderingUtilitiesExporter } from '../utils/esbuild/renderring-utilities-exporter.js';
 import {
-  type EmailsDirectory,
-  getEmailsDirectoryMetadata,
-} from '../utils/get-emails-directory-metadata.js';
+  type DocumentsDirectory,
+  getDocumentsDirectoryMetadata,
+} from '../utils/get-documents-directory-metadata.js';
 import { tree } from '../utils/index.js';
 import { registerSpinnerAutostopping } from '../utils/register-spinner-autostopping.js';
 
-const getEmailTemplatesFromDirectory = (emailDirectory: EmailsDirectory) => {
+const getDocumentTemplatesFromDirectory = (documentDirectory: DocumentsDirectory) => {
   const templatePaths = [] as string[];
-  emailDirectory.emailFilenames.forEach((filename) =>
-    templatePaths.push(path.join(emailDirectory.absolutePath, filename)),
+  documentDirectory.documentFilenames.forEach((filename) =>
+    templatePaths.push(path.join(documentDirectory.absolutePath, filename)),
   );
-  emailDirectory.subDirectories.forEach((directory) => {
-    templatePaths.push(...getEmailTemplatesFromDirectory(directory));
+  documentDirectory.subDirectories.forEach((directory) => {
+    templatePaths.push(...getDocumentTemplatesFromDirectory(directory));
   });
 
   return templatePaths;
@@ -44,13 +44,13 @@ const require = createRequire(filename);
   using the `render` function.
  */
 export const exportTemplates = async (
-  pathToWhereEmailMarkupShouldBeDumped: string,
-  emailsDirectoryPath: string,
+  pathToWhereDocumentMarkupShouldBeDumped: string,
+  documentsDirectoryPath: string,
   options: ExportTemplatesOptions,
 ) => {
   /* Delete the out directory if it already exists */
-  if (fs.existsSync(pathToWhereEmailMarkupShouldBeDumped)) {
-    fs.rmSync(pathToWhereEmailMarkupShouldBeDumped, { recursive: true });
+  if (fs.existsSync(pathToWhereDocumentMarkupShouldBeDumped)) {
+    fs.rmSync(pathToWhereDocumentMarkupShouldBeDumped, { recursive: true });
   }
 
   let spinner: Ora | undefined;
@@ -59,22 +59,22 @@ export const exportTemplates = async (
     registerSpinnerAutostopping(spinner);
   }
 
-  const emailsDirectoryMetadata = await getEmailsDirectoryMetadata(
-    path.resolve(process.cwd(), emailsDirectoryPath),
+  const documentsDirectoryMetadata = await getDocumentsDirectoryMetadata(
+    path.resolve(process.cwd(), documentsDirectoryPath),
     true,
   );
 
-  if (typeof emailsDirectoryMetadata === 'undefined') {
+  if (typeof documentsDirectoryMetadata === 'undefined') {
     if (spinner) {
       spinner.stopAndPersist({
         symbol: logSymbols.error,
-        text: `Could not find the directory at ${emailsDirectoryPath}`,
+        text: `Could not find the directory at ${documentsDirectoryPath}`,
       });
     }
     return;
   }
 
-  const allTemplates = getEmailTemplatesFromDirectory(emailsDirectoryMetadata);
+  const allTemplates = getDocumentTemplatesFromDirectory(documentsDirectoryMetadata);
 
   try {
     await build({
@@ -85,7 +85,7 @@ export const exportTemplates = async (
       loader: { '.js': 'jsx' },
       logLevel: 'silent',
       outExtension: { '.js': '.cjs' },
-      outdir: pathToWhereEmailMarkupShouldBeDumped,
+      outdir: pathToWhereDocumentMarkupShouldBeDumped,
       platform: 'node',
       plugins: [renderingUtilitiesExporter(allTemplates)],
       write: true,
@@ -94,7 +94,7 @@ export const exportTemplates = async (
     if (spinner) {
       spinner.stopAndPersist({
         symbol: logSymbols.error,
-        text: 'Failed to build emails',
+        text: 'Failed to build documents',
       });
     }
 
@@ -109,7 +109,7 @@ export const exportTemplates = async (
   }
 
   const allBuiltTemplates = glob.sync(
-    normalize(`${pathToWhereEmailMarkupShouldBeDumped}/**/*.cjs`),
+    normalize(`${pathToWhereDocumentMarkupShouldBeDumped}/**/*.cjs`),
     {
       absolute: true,
     },
@@ -122,16 +122,16 @@ export const exportTemplates = async (
         spinner.render();
       }
       delete require.cache[template];
-      const emailModule = require(template) as {
+      const documentModule = require(template) as {
         default: React.FC;
         render: (
           element: React.ReactElement,
           options: Record<string, unknown>,
         ) => Promise<string>;
-        reactEmailCreateReactElement: typeof React.createElement;
+        reactDocumentCreateReactElement: typeof React.createElement;
       };
-      const rendered = await emailModule.render(
-        emailModule.reactEmailCreateReactElement(emailModule.default, {}),
+      const rendered = await documentModule.render(
+        documentModule.reactDocumentCreateReactElement(documentModule.default, {}),
         options,
       );
       const htmlPath = template.replace(
@@ -157,12 +157,12 @@ export const exportTemplates = async (
     spinner.render();
   }
 
-  // ex: emails/static
-  const staticDirectoryPath = path.join(emailsDirectoryPath, 'static');
+  // ex: documents/static
+  const staticDirectoryPath = path.join(documentsDirectoryPath, 'static');
 
   if (fs.existsSync(staticDirectoryPath)) {
     const pathToDumpStaticFilesInto = path.join(
-      pathToWhereEmailMarkupShouldBeDumped,
+      pathToWhereDocumentMarkupShouldBeDumped,
       'static',
     );
     // cp('-r', ...) will copy *inside* of the static directory if it exists
@@ -183,7 +183,7 @@ export const exportTemplates = async (
         });
       }
       console.error(
-        `Something went wrong while copying the file to ${pathToWhereEmailMarkupShouldBeDumped}/static, ${exception}`,
+        `Something went wrong while copying the file to ${pathToWhereDocumentMarkupShouldBeDumped}/static, ${exception}`,
       );
       process.exit(1);
     }
@@ -192,13 +192,13 @@ export const exportTemplates = async (
   if (spinner && !options.silent) {
     spinner.succeed();
 
-    const fileTree = await tree(pathToWhereEmailMarkupShouldBeDumped, 4);
+    const fileTree = await tree(pathToWhereDocumentMarkupShouldBeDumped, 4);
 
     console.log(fileTree);
 
     spinner.stopAndPersist({
       symbol: logSymbols.success,
-      text: 'Successfully exported emails',
+      text: 'Successfully exported documents',
     });
   }
 };

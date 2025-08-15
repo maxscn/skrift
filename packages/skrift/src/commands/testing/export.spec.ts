@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { exportTemplates } from '../export.js';
 
-test('email export', { retry: 3 }, async () => {
-  const pathToEmailsDirectory = path.resolve(
+test('document export', { retry: 3 }, async () => {
+  const pathToDocumentsDirectory = path.resolve(
     __dirname,
-    '../../../../../apps/demo/emails',
+    '../../../../../apps/demo/documents',
   );
   const pathToDumpMarkup = path.resolve(__dirname, './out');
-  await exportTemplates(pathToDumpMarkup, pathToEmailsDirectory, {
+  await exportTemplates(pathToDumpMarkup, pathToDocumentsDirectory, {
     silent: true,
     pretty: true,
   });

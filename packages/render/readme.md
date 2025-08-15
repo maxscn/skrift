@@ -1,14 +1,14 @@
-![Skrift button cover](https://react.email/static/covers/render.png)
+![Skrift button cover](https://react.document/static/covers/render.png)
 
 <div align="center"><strong>@skrift/render</strong></div>
-<div align="center">Transform React components into HTML email templates.</div>
+<div align="center">Transform React components into HTML document templates.</div>
 <br />
 <div align="center">
-<a href="https://react.email">Website</a> 
+<a href="https://react.document">Website</a> 
 <span> · </span>
 <a href="https://github.com/maxscn/skrift">GitHub</a> 
 <span> · </span>
-<a href="https://react.email/discord">Discord</a>
+<a href="https://react.document/discord">Discord</a>
 </div>
 
 ## Install

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { EmailsProvider } from '../contexts/emails';
-import { getEmailsDirectoryMetadata } from '../utils/get-emails-directory-metadata';
-import { emailsDirectoryAbsolutePath } from './env';
+import { DocumentsProvider } from '../contexts/documents';
+import { getDocumentsDirectoryMetadata } from '../utils/get-documents-directory-metadata';
+import { documentsDirectoryAbsolutePath } from './env';
 import { inter, sfMono } from './fonts';
 
 export const metadata: Metadata = {
@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const emailsDirectoryMetadata = await getEmailsDirectoryMetadata(
-    emailsDirectoryAbsolutePath,
+  const documentsDirectoryMetadata = await getDocumentsDirectoryMetadata(
+    documentsDirectoryAbsolutePath,
   );
 
-  if (typeof emailsDirectoryMetadata === 'undefined') {
+  if (typeof documentsDirectoryMetadata === 'undefined') {
     throw new Error(
-      `Could not find the emails directory specified under ${emailsDirectoryAbsolutePath}!`,
+      `Could not find the documents directory specified under ${documentsDirectoryAbsolutePath}!`,
     );
   }
 
@@ -29,11 +29,11 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <body className="relative h-screen bg-black text-slate-11 leading-loose selection:bg-cyan-5 selection:text-cyan-12">
         <div className="bg-gradient-to-t from-slate-3 flex flex-col">
-          <EmailsProvider
-            initialEmailsDirectoryMetadata={emailsDirectoryMetadata}
+          <DocumentsProvider
+            initialDocumentsDirectoryMetadata={documentsDirectoryMetadata}
           >
             {children}
-          </EmailsProvider>
+          </DocumentsProvider>
         </div>
       </body>
     </html>

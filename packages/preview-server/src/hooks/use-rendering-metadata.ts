@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import type {
-  EmailRenderingResult,
-  RenderedEmailMetadata,
-} from '../actions/render-email-by-path';
+  DocumentRenderingResult,
+  RenderedDocumentMetadata,
+} from '../actions/render-document-by-path';
 
-const lastRenderingMetadataPerEmailPath = {} as Record<
+const lastRenderingMetadataPerDocumentPath = {} as Record<
   string,
-  RenderedEmailMetadata
+  RenderedDocumentMetadata
 >;
 
 /**
@@ -14,23 +14,23 @@ const lastRenderingMetadataPerEmailPath = {} as Record<
  * does not error. If it does error it returns the last value it had for the hook.
  */
 export const useRenderingMetadata = (
-  emailPath: string,
-  renderingResult: EmailRenderingResult,
-  serverRenderingMetadata: EmailRenderingResult,
-): RenderedEmailMetadata | undefined => {
+  documentPath: string,
+  renderingResult: DocumentRenderingResult,
+  serverRenderingMetadata: DocumentRenderingResult,
+): RenderedDocumentMetadata | undefined => {
   useEffect(() => {
     if ('markup' in renderingResult) {
-      lastRenderingMetadataPerEmailPath[emailPath] = renderingResult;
+      lastRenderingMetadataPerDocumentPath[documentPath] = renderingResult;
     } else if (
       typeof serverRenderingMetadata !== 'undefined' &&
       'markup' in serverRenderingMetadata &&
-      typeof lastRenderingMetadataPerEmailPath[emailPath] === 'undefined'
+      typeof lastRenderingMetadataPerDocumentPath[documentPath] === 'undefined'
     ) {
-      lastRenderingMetadataPerEmailPath[emailPath] = serverRenderingMetadata;
+      lastRenderingMetadataPerDocumentPath[documentPath] = serverRenderingMetadata;
     }
-  }, [renderingResult, emailPath, serverRenderingMetadata]);
+  }, [renderingResult, documentPath, serverRenderingMetadata]);
 
   return 'error' in renderingResult
-    ? lastRenderingMetadataPerEmailPath[emailPath]
+    ? lastRenderingMetadataPerDocumentPath[documentPath]
     : renderingResult;
 };

@@ -14,7 +14,7 @@ export const start = async () => {
     );
     if (!fs.existsSync(builtPreviewPath)) {
       console.error(
-        "Could not find .skrift, maybe you haven't ran email build?",
+        "Could not find .skrift, maybe you haven't ran document build?",
       );
       process.exit(1);
     }

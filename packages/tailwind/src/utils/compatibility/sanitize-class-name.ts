@@ -12,7 +12,7 @@ const digitToNameMap = {
 } as const;
 
 /**
- * Replaces special characters to avoid problems on email clients.
+ * Replaces special characters to avoid problems on document clients.
  *
  * @param className - This should not come with any escaped charcters, it should come the same
  * as is on the `className` attribute on React elements.

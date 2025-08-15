@@ -28,7 +28,7 @@ const safeAsyncServerListen = (server: http.Server, port: number) => {
 };
 
 export const startDevServer = async (
-  emailsDirRelativePath: string,
+  documentsDirRelativePath: string,
   staticBaseDirRelativePath: string,
   port: number,
 ): Promise<http.Server> => {
@@ -96,7 +96,7 @@ export const startDevServer = async (
       ` ${logSymbols.warning} Port ${port} is already in use, trying ${nextPortToTry}`,
     );
     return startDevServer(
-      emailsDirRelativePath,
+      documentsDirRelativePath,
       staticBaseDirRelativePath,
       nextPortToTry,
     );
@@ -131,7 +131,7 @@ export const startDevServer = async (
     }),
     ...getEnvVariablesForPreviewApp(
       // If we don't do normalization here, stuff like https://github.com/maxscn/skrift/issues/1354 happens.
-      path.normalize(emailsDirRelativePath),
+      path.normalize(documentsDirRelativePath),
       process.cwd(),
     ),
   };

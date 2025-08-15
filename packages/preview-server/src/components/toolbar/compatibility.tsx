@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { nicenames } from '../../actions/email-validation/caniemail-data';
+import { nicenames } from '../../actions/document-validation/canidocument-data';
 import {
   type CompatibilityCheckingResult,
   checkCompatibility,
-} from '../../actions/email-validation/check-compatibility';
+} from '../../actions/document-validation/check-compatibility';
 import { sanitize } from '../../utils';
 import { loadStream } from '../../utils/load-stream';
 import { IconWarning } from '../icons/icon-warning';
@@ -13,12 +13,12 @@ import { Results } from './results';
 
 export const useCompatibility = ({
   reactMarkup,
-  emailPath,
+  documentPath,
 
   initialResults,
 }: {
   reactMarkup: string;
-  emailPath: string;
+  documentPath: string;
 
   initialResults?: CompatibilityCheckingResult[];
 }) => {
@@ -36,7 +36,7 @@ export const useCompatibility = ({
     let rawResults: CompatibilityCheckingResult[] = [];
 
     try {
-      const stream = await checkCompatibility(reactMarkup, emailPath);
+      const stream = await checkCompatibility(reactMarkup, documentPath);
       for await (const result of loadStream(stream)) {
         if (result.status !== 'error') continue;
         setResults((current) => {
@@ -70,10 +70,10 @@ export const Compatibility = ({ results }: CompatibilityProps) => {
     <Results>
       {results?.map((result, i) => {
         const statsReportedNotWorking = Object.entries(
-          result.statsPerEmailClient,
+          result.statsPerDocumentClient,
         ).filter(([, stats]) => stats.status === 'error');
         const unsupportedClientsString = statsReportedNotWorking
-          .map(([emailClient]) => nicenames.family[emailClient])
+          .map(([documentClient]) => nicenames.family[documentClient])
           .join(', ');
 
         return (

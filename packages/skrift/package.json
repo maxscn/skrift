@@ -1,7 +1,7 @@
 {
   "name": "skrift",
   "version": "0.0.1",
-  "description": "A live preview of your pdfs right in your browser.",
+  "description": "A live preview of your documents right in your browser.",
   "bin": {
     "skrift": "./dist/index.js"
   },

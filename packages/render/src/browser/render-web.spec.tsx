@@ -126,7 +126,7 @@ describe('render on the browser environment', () => {
   });
 
   it('should properly wait for Suepsense boundaries to ending before resolving', async () => {
-    const EmailTemplate = () => {
+    const DocumentTemplate = () => {
       const html = usePromise(
         () => fetch('https://example.com').then((res) => res.text()),
         [],
@@ -135,7 +135,7 @@ describe('render on the browser environment', () => {
       return <div dangerouslySetInnerHTML={{ __html: html }} />;
     };
 
-    const renderedTemplate = await render(<EmailTemplate />);
+    const renderedTemplate = await render(<DocumentTemplate />);
 
     expect(renderedTemplate).toMatchSnapshot();
   });

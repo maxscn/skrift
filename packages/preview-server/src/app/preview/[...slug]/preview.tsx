@@ -11,7 +11,7 @@ import {
   makeIframeDocumentBubbleEvents,
   ResizableWrapper,
 } from '../../../components/resizable-wrapper';
-import { Send } from '../../../components/send';
+import { Print } from '../../../components/send';
 import { useToolbarState } from '../../../components/toolbar';
 import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
@@ -22,11 +22,11 @@ import { cn } from '../../../utils';
 import { RenderingError } from './rendering-error';
 
 interface PreviewProps extends React.ComponentProps<'div'> {
-  emailTitle: string;
+  documentTitle: string;
 }
 
-const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
-  const { renderingResult, renderedEmailMetadata } = use(PreviewContext)!;
+const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
+  const { renderingResult, renderedDocumentMetadata } = use(PreviewContext)!;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +51,7 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
     );
   };
 
-  const hasRenderingMetadata = typeof renderedEmailMetadata !== 'undefined';
+  const hasRenderingMetadata = typeof renderedDocumentMetadata !== 'undefined';
   const hasErrors = 'error' in renderingResult;
 
   const [maxWidth, setMaxWidth] = useState(Number.POSITIVE_INFINITY);
@@ -79,10 +79,10 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
   }, 300);
 
   const { toggled: toolbarToggled } = useToolbarState();
-
+  console.log(renderedDocumentMetadata?.markup)
   return (
     <>
-      <Topbar emailTitle={emailTitle}>
+      <Topbar documentTitle={documentTitle}>
         <ViewSizeControls
           setViewHeight={(height) => {
             setHeight(height);
@@ -105,7 +105,7 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
         />
         {hasRenderingMetadata ? (
           <div className="flex justify-end">
-            <Send markup={renderedEmailMetadata.markup} />
+            <Print markup={renderedDocumentMetadata.markup} />
           </div>
         ) : null}
       </Topbar>
@@ -113,7 +113,7 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
       <div
         {...props}
         className={cn(
-          'h-[calc(100%-3.5rem-2.375rem)] will-change-[height] flex p-4 transition-[height] duration-300',
+          'h-[calc(100%-3.5rem-2.375rem)] will-change-[height] flex p-4 transition-[height] duration-300 overflow-auto',
           activeView === 'preview' && 'bg-gray-200',
           toolbarToggled && 'h-[calc(100%-3.5rem-13rem)]',
           className,
@@ -122,8 +122,8 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
           const observer = new ResizeObserver((entry) => {
             const [elementEntry] = entry;
             if (elementEntry) {
-              setMaxWidth(elementEntry.contentRect.width);
-              setMaxHeight(elementEntry.contentRect.height);
+            //  setMaxWidth(elementEntry.contentRect.width);
+            //  setMaxHeight(elementEntry.contentRect.height);
             }
           });
 
@@ -162,18 +162,18 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
                 width={width}
               >
                 <iframe
-                  className="max-h-full rounded-lg bg-white [color-scheme:auto]"
+                  className=" rounded-lg bg-white [color-scheme:auto]"
                   ref={(iframe) => {
                     if (iframe) {
                       return makeIframeDocumentBubbleEvents(iframe);
                     }
                   }}
-                  srcDoc={renderedEmailMetadata.markup}
+                  srcDoc={renderedDocumentMetadata.markup}
                   style={{
                     width: `${width}px`,
                     height: `${height}px`,
                   }}
-                  title={emailTitle}
+                  title={documentTitle}
                 />
               </ResizableWrapper>
             )}
@@ -187,15 +187,15 @@ const Preview = ({ emailTitle, className, ...props }: PreviewProps) => {
                       markups={[
                         {
                           language: 'jsx',
-                          content: renderedEmailMetadata.reactMarkup,
+                          content: renderedDocumentMetadata.reactMarkup,
                         },
                         {
                           language: 'markup',
-                          content: renderedEmailMetadata.markup,
+                          content: renderedDocumentMetadata.markup,
                         },
                         {
                           language: 'markdown',
-                          content: renderedEmailMetadata.plainText,
+                          content: renderedDocumentMetadata.plainText,
                         },
                       ]}
                       setActiveLang={handleLangChange}

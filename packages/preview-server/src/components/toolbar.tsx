@@ -3,7 +3,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { LayoutGroup } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import type { CompatibilityCheckingResult } from '../actions/email-validation/check-compatibility';
+import type { CompatibilityCheckingResult } from '../actions/document-validation/check-compatibility';
 import { isBuilding } from '../app/env';
 import { PreviewContext } from '../contexts/preview';
 import { cn } from '../utils';
@@ -44,14 +44,14 @@ const ToolbarInner = ({
   markup,
   reactMarkup,
   plainText,
-  emailPath,
-  emailSlug,
+  documentPath,
+  documentSlug,
 }: ToolbarProps & {
   markup: string;
   reactMarkup: string;
   plainText: string;
-  emailSlug: string;
-  emailPath: string;
+  documentSlug: string;
+  documentPath: string;
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -71,7 +71,7 @@ const ToolbarInner = ({
 
   const [cachedSpamCheckingResult, setCachedSpamCheckingResult] =
     useCachedState<SpamCheckingResult>(
-      `spam-assassin-${emailSlug.replaceAll('/', '-')}`,
+      `spam-assassin-${documentSlug.replaceAll('/', '-')}`,
     );
   const [spamCheckingResult, { load: loadSpamChecking, loading: spamLoading }] =
     useSpamAssassin({
@@ -83,7 +83,7 @@ const ToolbarInner = ({
 
   const [cachedLintingRows, setCachedLintingRows] = useCachedState<
     LintingRow[]
-  >(`linter-${emailSlug.replaceAll('/', '-')}`);
+  >(`linter-${documentSlug.replaceAll('/', '-')}`);
   const [lintingRows, { load: loadLinting, loading: lintLoading }] = useLinter({
     markup,
 
@@ -91,13 +91,13 @@ const ToolbarInner = ({
   });
   const [cachedCompatibilityResults, setCachedCompatibilityResults] =
     useCachedState<CompatibilityCheckingResult[]>(
-      `compatibility-${emailSlug.replaceAll('/', '-')}`,
+      `compatibility-${documentSlug.replaceAll('/', '-')}`,
     );
   const [
     compatibilityCheckingResults,
     { load: loadCompatibility, loading: compatibilityLoading },
   ] = useCompatibility({
-    emailPath,
+    documentPath,
     reactMarkup,
 
     initialResults: serverCompatibilityResults ?? cachedCompatibilityResults,
@@ -164,9 +164,9 @@ const ToolbarInner = ({
                   (activeTab === 'linter' &&
                     'The Linter tab checks all the images and links for common issues like missing alt text, broken URLs, insecure HTTP methods, and more.') ||
                   (activeTab === 'spam-assassin' &&
-                    'The Spam tab will look at the content and use a robust scoring framework to determine if the email is likely to be spam. Powered by SpamAssassin.') ||
+                    'The Spam tab will look at the content and use a robust scoring framework to determine if the document is likely to be spam. Powered by SpamAssassin.') ||
                   (activeTab === 'compatibility' &&
-                    'The Compatibility tab shows how well the HTML/CSS is supported across mail clients like Outlook, Gmail, etc. Powered by Can I Email.') ||
+                    'The Compatibility tab shows how well the HTML/CSS is supported across mail clients like Outlook, Gmail, etc. Powered by Can I Document.') ||
                   'Info'
                 }
               >
@@ -234,7 +234,7 @@ const ToolbarInner = ({
             </Tabs.Content>
             <Tabs.Content value="compatibility">
               {compatibilityLoading ? (
-                <LoadingState message="Checking email compatibility..." />
+                <LoadingState message="Checking document compatibility..." />
               ) : compatibilityCheckingResults?.length === 0 ? (
                 <SuccessWrapper>
                   <SuccessIcon />
@@ -249,13 +249,13 @@ const ToolbarInner = ({
             </Tabs.Content>
             <Tabs.Content value="spam-assassin">
               {spamLoading ? (
-                <LoadingState message="Evaluating your email for spam indicators..." />
+                <LoadingState message="Evaluating your document for spam indicators..." />
               ) : spamCheckingResult?.isSpam === false ? (
                 <SuccessWrapper>
                   <SuccessIcon />
                   <SuccessTitle>10/10</SuccessTitle>
                   <SuccessDescription>
-                    Your email is clean of abuse indicators.
+                    Your document is clean of abuse indicators.
                   </SuccessDescription>
                 </SuccessWrapper>
               ) : (
@@ -332,16 +332,16 @@ export const Toolbar = ({
   serverSpamCheckingResult,
   serverCompatibilityResults,
 }: ToolbarProps) => {
-  const { emailPath, emailSlug, renderedEmailMetadata } =
+  const { documentPath, documentSlug, renderedDocumentMetadata } =
     React.use(PreviewContext)!;
 
-  if (renderedEmailMetadata === undefined) return null;
-  const { markup, plainText, reactMarkup } = renderedEmailMetadata;
+  if (renderedDocumentMetadata === undefined) return null;
+  const { markup, plainText, reactMarkup } = renderedDocumentMetadata;
 
   return (
     <ToolbarInner
-      emailPath={emailPath}
-      emailSlug={emailSlug}
+      documentPath={documentPath}
+      documentSlug={documentSlug}
       markup={markup}
       reactMarkup={reactMarkup}
       plainText={plainText}

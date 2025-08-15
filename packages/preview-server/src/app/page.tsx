@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { Button, Heading, Text } from '../components';
 import CodeSnippet from '../components/code-snippet';
 import { Shell } from '../components/shell';
-import { emailsDirectoryAbsolutePath } from './env';
+import { documentsDirectoryAbsolutePath } from './env';
 import logo from './logo.png';
 
 const Home = () => {
-  const baseEmailsDirectoryName = path.basename(emailsDirectoryAbsolutePath);
+  const baseDocumentsDirectoryName = path.basename(documentsDirectoryAbsolutePath);
 
   return (
     <Shell>
@@ -29,13 +29,13 @@ const Home = () => {
             Welcome to Skrift
           </Heading>
           <Text as="p">
-            To start developing your emails, you can create a<br />
+            To start developing your documents, you can create a<br />
             <CodeSnippet>.jsx</CodeSnippet> or <CodeSnippet>.tsx</CodeSnippet>{' '}
-            file under your <CodeSnippet>{baseEmailsDirectoryName}</CodeSnippet>{' '}
+            file under your <CodeSnippet>{baseDocumentsDirectoryName}</CodeSnippet>{' '}
             folder.
           </Text>
           <Button asChild className="mt-3" size="3">
-            <Link href="https://react.email/docs">Check the docs</Link>
+            <Link href="https://react.document/docs">Check the docs</Link>
           </Button>
         </div>
       </div>

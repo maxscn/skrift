@@ -7,14 +7,14 @@ const filename = url.fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 const previewServerRoot = path.resolve(dirname, '..');
-const emailsDirectoryPath = path.join(previewServerRoot, 'emails');
+const documentsDirectoryPath = path.join(previewServerRoot, 'documents');
 
 const envPath = path.join(previewServerRoot, '.env.local');
 
 await fs.writeFile(
   envPath,
-  `EMAILS_DIR_RELATIVE_PATH=./emails
-EMAILS_DIR_ABSOLUTE_PATH=${emailsDirectoryPath}
+  `DOCUMENTS_DIR_RELATIVE_PATH=./documents
+DOCUMENTS_DIR_ABSOLUTE_PATH=${documentsDirectoryPath}
 USER_PROJECT_LOCATION=${previewServerRoot}
 NEXT_PUBLIC_IS_PREVIEW_DEVELOPMENT=true`,
   'utf8',

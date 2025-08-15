@@ -3,7 +3,7 @@ import selectorParser from 'postcss-selector-parser';
 import { sanitizeClassName } from '../compatibility/sanitize-class-name';
 
 /**
- * This function goes through a few steps to ensure the best email client support and
+ * This function goes through a few steps to ensure the best document client support and
  * to ensure that the media queries and pseudo classes are going to applied correctly alongisde
  * the inline styles.
  *

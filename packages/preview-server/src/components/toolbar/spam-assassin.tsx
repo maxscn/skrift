@@ -48,7 +48,7 @@ export const useSpamAssassin = ({
     setLoading(true);
 
     try {
-      const response = await fetch('https://react.email/api/check-spam', {
+      const response = await fetch('https://react.document/api/check-spam', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,7 +100,7 @@ export const SpamAssassin = ({ result }: SpamAssassinProps) => {
             </Results.Column>
             <Results.Column>
               {result.points === 0
-                ? 'Congratulations! Your email is clean of abuse indicators.'
+                ? 'Congratulations! Your document is clean of abuse indicators.'
                 : 'Higher scores are better'}
             </Results.Column>
             <Results.Column className="text-right tracking-tighter font-bold">

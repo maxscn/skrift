@@ -86,7 +86,7 @@ describe('render on node environments', () => {
   });
 
   it('that it properly waits for Suepsense boundaries to resolve before resolving', async () => {
-    const EmailTemplate = () => {
+    const DocumentTemplate = () => {
       const html = usePromise(
         () => fetch('https://example.com').then((res) => res.text()),
         [],
@@ -97,7 +97,7 @@ describe('render on node environments', () => {
 
     const renderedTemplate = await render(
       <Suspense>
-        <EmailTemplate />
+        <DocumentTemplate />
       </Suspense>,
     );
 

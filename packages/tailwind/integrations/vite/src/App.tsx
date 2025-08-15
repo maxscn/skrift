@@ -1,10 +1,10 @@
 import { render } from '@skrift/components';
-import { VercelInviteUserEmail } from '../emails/vercel-invite-user';
+import { VercelInviteUserDocument } from '../documents/vercel-invite-user';
 
 function App() {
-  const emailHtml = render(<VercelInviteUserEmail />);
+  const documentHtml = render(<VercelInviteUserDocument />);
 
-  return <div dangerouslySetInnerHTML={{ __html: emailHtml }} />;
+  return <div dangerouslySetInnerHTML={{ __html: documentHtml }} />;
 }
 
 export default App;

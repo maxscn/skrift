@@ -8,7 +8,7 @@ import { createDependencyGraph } from './create-dependency-graph.js';
 
 export const setupHotreloading = async (
   devServer: http.Server,
-  emailDirRelativePath: string,
+  documentDirRelativePath: string,
 ) => {
   let clients: Socket[] = [];
   const io = new SocketServer(devServer);
@@ -31,10 +31,10 @@ export const setupHotreloading = async (
       client.emit(
         'reload',
         changes.filter((change) =>
-          // Ensures only changes inside the emails directory are emitted
+          // Ensures only changes inside the documents directory are emitted
           path
-            .resolve(absolutePathToEmailsDirectory, change.filename)
-            .startsWith(absolutePathToEmailsDirectory),
+            .resolve(absolutePathToDocumentsDirectory, change.filename)
+            .startsWith(absolutePathToDocumentsDirectory),
         ),
       );
     });
@@ -42,27 +42,27 @@ export const setupHotreloading = async (
     changes = [];
   }, 150);
 
-  const absolutePathToEmailsDirectory = path.resolve(
+  const absolutePathToDocumentsDirectory = path.resolve(
     process.cwd(),
-    emailDirRelativePath,
+    documentDirRelativePath,
   );
 
   const [dependencyGraph, updateDependencyGraph, { resolveDependentsOf }] =
-    await createDependencyGraph(absolutePathToEmailsDirectory);
+    await createDependencyGraph(absolutePathToDocumentsDirectory);
 
   const watcher = watch('', {
     ignoreInitial: true,
-    cwd: absolutePathToEmailsDirectory,
+    cwd: absolutePathToDocumentsDirectory,
   });
 
-  const getFilesOutsideEmailsDirectory = () =>
+  const getFilesOutsideDocumentsDirectory = () =>
     Object.keys(dependencyGraph).filter((p) =>
-      path.relative(absolutePathToEmailsDirectory, p).startsWith('..'),
+      path.relative(absolutePathToDocumentsDirectory, p).startsWith('..'),
     );
-  let filesOutsideEmailsDirectory = getFilesOutsideEmailsDirectory();
+  let filesOutsideDocumentsDirectory = getFilesOutsideDocumentsDirectory();
   // adds in to be watched separately all of the files that are outside of
-  // the user's emails directory
-  for (const p of filesOutsideEmailsDirectory) {
+  // the user's documents directory
+  for (const p of filesOutsideDocumentsDirectory) {
     watcher.add(p);
   }
 
@@ -78,28 +78,28 @@ export const setupHotreloading = async (
       return;
     }
     const pathToChangeTarget = path.resolve(
-      absolutePathToEmailsDirectory,
+      absolutePathToDocumentsDirectory,
       relativePathToChangeTarget,
     );
 
     await updateDependencyGraph(event, pathToChangeTarget);
 
-    const newFilesOutsideEmailsDirectory = getFilesOutsideEmailsDirectory();
-    // updates the files outside of the user's emails directory by unwatching
+    const newFilesOutsideDocumentsDirectory = getFilesOutsideDocumentsDirectory();
+    // updates the files outside of the user's documents directory by unwatching
     // the inexistent ones and watching the new ones
     //
     // this is necessary to avoid the issue mentioned here https://github.com/maxscn/skrift/issues/1433#issuecomment-2177515290
-    for (const p of filesOutsideEmailsDirectory) {
-      if (!newFilesOutsideEmailsDirectory.includes(p)) {
+    for (const p of filesOutsideDocumentsDirectory) {
+      if (!newFilesOutsideDocumentsDirectory.includes(p)) {
         watcher.unwatch(p);
       }
     }
-    for (const p of newFilesOutsideEmailsDirectory) {
-      if (!filesOutsideEmailsDirectory.includes(p)) {
+    for (const p of newFilesOutsideDocumentsDirectory) {
+      if (!filesOutsideDocumentsDirectory.includes(p)) {
         watcher.add(p);
       }
     }
-    filesOutsideEmailsDirectory = newFilesOutsideEmailsDirectory;
+    filesOutsideDocumentsDirectory = newFilesOutsideDocumentsDirectory;
 
     changes.push({
       event,
@@ -111,7 +111,7 @@ export const setupHotreloading = async (
     for (const dependentPath of resolveDependentsOf(pathToChangeTarget)) {
       changes.push({
         event: 'change' as const,
-        filename: path.relative(absolutePathToEmailsDirectory, dependentPath),
+        filename: path.relative(absolutePathToDocumentsDirectory, dependentPath),
       });
     }
     reload();

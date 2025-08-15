@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { cn } from '../../utils';
-import type { EmailsDirectory } from '../../utils/get-emails-directory-metadata';
+import type { DocumentsDirectory } from '../../utils/get-documents-directory-metadata';
 import { IconFile } from '../icons/icon-file';
 import { FileTreeDirectory } from './file-tree-directory';
 
 export const FileTreeDirectoryChildren = (props: {
-  emailsDirectoryMetadata: EmailsDirectory;
-  currentEmailOpenSlug?: string;
+  documentsDirectoryMetadata: DocumentsDirectory;
+  currentDocumentOpenSlug?: string;
   open: boolean;
   isRoot?: boolean;
 }) => {
@@ -37,21 +37,21 @@ export const FileTreeDirectoryChildren = (props: {
             )}
             <div className="flex flex-col truncate">
               <LayoutGroup id={`sidebar-${id}`}>
-                {props.emailsDirectoryMetadata.subDirectories.map(
+                {props.documentsDirectoryMetadata.subDirectories.map(
                   (subDirectory) => (
                     <FileTreeDirectory
                       className="p-0 data-[state=open]:mb-2"
-                      currentEmailOpenSlug={props.currentEmailOpenSlug}
-                      emailsDirectoryMetadata={subDirectory}
+                      currentDocumentOpenSlug={props.currentDocumentOpenSlug}
+                      documentsDirectoryMetadata={subDirectory}
                       key={subDirectory.absolutePath}
                     />
                   ),
                 )}
-                {props.emailsDirectoryMetadata.emailFilenames.map(
-                  (emailFilename, index) => {
-                    const emailSlug = props.isRoot
-                      ? emailFilename
-                      : `${props.emailsDirectoryMetadata.relativePath}/${emailFilename}`;
+                {props.documentsDirectoryMetadata.documentFilenames.map(
+                  (documentFilename, index) => {
+                    const documentSlug = props.isRoot
+                      ? documentFilename
+                      : `${props.documentsDirectoryMetadata.relativePath}/${documentFilename}`;
 
                     const removeExtensionFrom = (path: string) => {
                       if (
@@ -64,23 +64,23 @@ export const FileTreeDirectoryChildren = (props: {
 
                       return path;
                     };
-                    const isCurrentPage = props.currentEmailOpenSlug
-                      ? removeExtensionFrom(props.currentEmailOpenSlug) ===
-                        emailSlug
+                    const isCurrentPage = props.currentDocumentOpenSlug
+                      ? removeExtensionFrom(props.currentDocumentOpenSlug) ===
+                        documentSlug
                       : false;
 
                     return (
                       <Link
                         href={{
-                          pathname: `/preview/${emailSlug}`,
+                          pathname: `/preview/${documentSlug}`,
                           search: searchParams.toString(),
                         }}
                         onMouseOver={() => {
                           router.prefetch(
-                            `/preview/${emailSlug}?${searchParams.toString()}`,
+                            `/preview/${documentSlug}?${searchParams.toString()}`,
                           );
                         }}
-                        key={emailSlug}
+                        key={documentSlug}
                       >
                         <motion.span
                           animate={{ x: 0, opacity: 1 }}
@@ -90,7 +90,7 @@ export const FileTreeDirectoryChildren = (props: {
                             {
                               'text-cyan-11': isCurrentPage,
                               'hover:text-slate-12':
-                                props.currentEmailOpenSlug !== emailSlug,
+                                props.currentDocumentOpenSlug !== documentSlug,
                             },
                           )}
                           initial={{ x: -10 + -index * 1.5, opacity: 0 }}
@@ -125,7 +125,7 @@ export const FileTreeDirectoryChildren = (props: {
                             width="20"
                           />
                           <span className="truncate w-[calc(100%-1.25rem)]">
-                            {emailFilename}
+                            {documentFilename}
                           </span>
                         </motion.span>
                       </Link>

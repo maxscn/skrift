@@ -142,7 +142,7 @@
 
 ### Patch Changes
 
-- 7481b12: Add a wrapping Suspense to all email templates before rendering
+- 7481b12: Add a wrapping Suspense to all document templates before rendering
 
 ## 1.0.0
 

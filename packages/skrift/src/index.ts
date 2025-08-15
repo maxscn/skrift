@@ -10,20 +10,20 @@ const PACKAGE_NAME = 'reactskrift';
 
 program
   .name(PACKAGE_NAME)
-  .description('A live preview of your emails right in your browser')
+  .description('A live preview of your documents right in your browser')
   .version(packageJson.version);
 
 program
   .command('dev')
   .description('Starts the preview pdf development app')
-  .option('-d, --dir <path>', 'Directory with your pdf templates', './pdfs')
+  .option('-d, --dir <path>', 'Directory with your pdf templates', './documents')
   .option('-p --port <port>', 'Port to run dev server on', '3000')
   .action(dev);
 
 program
   .command('build')
   .description('Copies the preview app for onto .skrift and builds it')
-  .option('-d, --dir <path>', 'Directory with your skrift pdf templates', './pdfs')
+  .option('-d, --dir <path>', 'Directory with your skrift pdf templates', './documents')
   .option(
     '-p --packageManager <name>',
     'Package name to use on installation on `.skrift`',
@@ -42,7 +42,7 @@ program
   .option('--outDir <path>', 'Output directory', 'out')
   .option('-p, --pretty', 'Pretty print the output', false)
   .option('-t, --plainText', 'Set output format as plain text', false)
-  .option('-d, --dir <path>', 'Directory with your email templates', './pdfs')
+  .option('-d, --dir <path>', 'Directory with your document templates', './documents')
   .option(
     '-s, --silent',
     'To, or not to show a spinner with process information',

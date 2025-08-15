@@ -1,17 +1,17 @@
 'use client';
 import { clsx } from 'clsx';
-import { useEmails } from '../../contexts/emails';
+import { useDocuments } from '../../contexts/documents';
 import { cn } from '../../utils';
 import { Logo } from '../logo';
 import { FileTree } from './file-tree';
 
 interface SidebarProps {
   className?: string;
-  currentEmailOpenSlug?: string;
+  currentDocumentOpenSlug?: string;
 }
 
-export const Sidebar = ({ className, currentEmailOpenSlug }: SidebarProps) => {
-  const { emailsDirectoryMetadata } = useEmails();
+export const Sidebar = ({ className, currentDocumentOpenSlug }: SidebarProps) => {
+  const { documentsDirectoryMetadata } = useDocuments();
 
   return (
     <aside
@@ -33,8 +33,8 @@ export const Sidebar = ({ className, currentEmailOpenSlug }: SidebarProps) => {
         </div>
         <div className="relative grow w-full h-full overflow-y-auto overflow-x-hidden border-slate-4 border-t px-4 pb-3">
           <FileTree
-            currentEmailOpenSlug={currentEmailOpenSlug}
-            emailsDirectoryMetadata={emailsDirectoryMetadata}
+            currentDocumentOpenSlug={currentDocumentOpenSlug}
+            documentsDirectoryMetadata={documentsDirectoryMetadata}
           />
         </div>
       </div>
