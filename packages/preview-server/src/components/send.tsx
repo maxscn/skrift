@@ -4,14 +4,16 @@ import { toast } from 'sonner';
 import { Button } from './button';
 import { Text } from './text';
 
-export const Print = ({ markup }: { markup: string }) => {
+export const Print = ({ iframe }: { iframe: React.Ref<HTMLIFrameElement> }) => {
 
   const onFormSubmit = async (e: React.FormEvent) => {
     if (typeof window === 'undefined') {
       return;
     }
     e.preventDefault();
-    window.print();
+    console.log(iframe, iframe.current)
+    iframe.current.contentWindow.focus();
+    iframe.current.contentWindow.print();
   };
 
 

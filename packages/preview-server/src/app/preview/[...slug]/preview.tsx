@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { use, useState } from 'react';
+import { use, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Toaster } from 'sonner';
 import { useDebouncedCallback } from 'use-debounce';
@@ -15,7 +15,7 @@ import { Print } from '../../../components/send';
 import { useToolbarState } from '../../../components/toolbar';
 import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
-import { ViewSizeControls } from '../../../components/topbar/view-size-controls';
+import { VIEW_PRESETS, ViewSizeControls } from '../../../components/topbar/view-size-controls';
 import type { PresetOption } from '../../../components/topbar/view-size-controls';
 import { PreviewContext } from '../../../contexts/preview';
 import { useClampedState } from '../../../hooks/use-clamped-state';
@@ -28,7 +28,7 @@ interface PreviewProps extends React.ComponentProps<'div'> {
 
 const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   const { renderingResult, renderedDocumentMetadata } = use(PreviewContext)!;
-
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -71,7 +71,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
     minHeight,
     maxHeight,
   );
-  const [currentPreset, setCurrentPreset] = useState<PresetOption | null>(null);
+  const [currentPreset, setCurrentPreset] = useState<PresetOption | undefined>(VIEW_PRESETS?.[0]);
 
   const handleSaveViewSize = useDebouncedCallback(() => {
     const params = new URLSearchParams(searchParams);
@@ -108,7 +108,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
         />
         {hasRenderingMetadata ? (
           <div className="flex justify-end">
-            <Print markup={renderedDocumentMetadata.markup} />
+            <Print iframe={iframeRef} />
           </div>
         ) : null}
       </Topbar>
@@ -174,6 +174,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
                   <MeasuredIframe
                     className=" bg-white [color-scheme:auto]"
                     ref={(iframe) => {
+                      iframeRef.current = iframe;
                       if (iframe) {
                         return makeIframeDocumentBubbleEvents(iframe);
                       }

@@ -1,13 +1,9 @@
 'use client';
-import {  useSearchParams } from 'next/navigation';
 
 import { use, useState } from 'react';
 import { MeasuredIframe } from '../../../components';
 import { PreviewContext } from '../../../contexts/preview';
-import { useClampedState } from '../../../hooks/use-clamped-state';
 import { useIsPrinting } from '../../../hooks/use-is-printing';
-import { cn } from '../../../utils';
-
 interface PrintPreviewProps extends React.ComponentProps<'div'> {
   documentTitle: string;
   width?: number;

@@ -13,8 +13,11 @@ export const Unbreakable: React.FC<UnbreakableProps> = ({
   ...props 
 }) => {
   const unbreakableStyle: React.CSSProperties = {
-    pageBreakInside: 'avoid',
     breakInside: 'avoid',
+    breakAfter: 'auto',
+    breakBefore: 'auto',
+    pageBreakInside: 'avoid',
+    
     ...style
   };
 

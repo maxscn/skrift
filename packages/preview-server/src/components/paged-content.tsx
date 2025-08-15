@@ -1,3 +1,4 @@
+"use client"
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
 interface PageProps {
@@ -44,7 +45,7 @@ const Page: React.FC<PageProps> = ({ children, pageHeight = 1000, pageWidth = 10
         padding: '4px 8px',
         borderRadius: '4px',
         border: '1px solid #e5e7eb',
-        zIndex: 10
+        zIndex: 0
       }}>
         Page {pageNumber} - {pageHeight}px
       </div>
@@ -120,21 +121,108 @@ const parseSrcDocForUnbreakableElements = async (srcDoc: string): Promise<DOMRec
   });
 };
 
+// Helper function to apply margin to iframe srcDoc content
+const applyMarginToIframeSrcDoc = (srcDoc: string, marginTop: number): string => {
+  // Parse the srcDoc HTML and add margin-top to first .skrift-unbreakable element
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(srcDoc, 'text/html');
+  const unbreakableElement = doc.querySelector('.skrift-unbreakable');
+  
+  if (unbreakableElement) {
+    const currentStyle = unbreakableElement.getAttribute('style') || '';
+    const newStyle = currentStyle + `; margin-top: ${marginTop}px !important;`;
+    unbreakableElement.setAttribute('style', newStyle);
+    
+    // Return the modified HTML
+    return doc.documentElement.outerHTML;
+  }
+  
+  return srcDoc;
+};
+
+// Helper function to apply margin to unbreakable elements
+const applyMarginToUnbreakableElements = (
+  children: React.ReactNode,
+  unbreakableMargins: Map<string, number>,
+  iframeMargins: Map<string, number> = new Map()
+): React.ReactNode => {
+  const applyMargin = (node: React.ReactNode, path: number[] = []): React.ReactNode => {
+    if (!node) return node;
+    console.log('Applying margin to node:', node, 'at path:', path);
+    if (React.isValidElement(node)) {
+      const pathKey = path.join('-');
+      const marginTop = unbreakableMargins.get(pathKey);
+      const iframeMargin = iframeMargins.get(pathKey);
+      const props = node.props as any;
+      
+      // Handle iframe with srcDoc that needs margin
+      if (props.srcDoc && iframeMargin && iframeMargin > 0) {
+        console.log(`Applying ${iframeMargin}px margin to iframe srcDoc at path ${pathKey}`);
+        const modifiedSrcDoc = applyMarginToIframeSrcDoc(props.srcDoc, iframeMargin);
+        return React.cloneElement(node, {
+          ...props,
+          srcDoc: modifiedSrcDoc
+        });
+      }
+      
+      // Check if this element needs margin (regular unbreakable elements)
+      if (marginTop && marginTop > 0 && 
+          typeof props.className === 'string' && 
+          props.className.includes('skrift-unbreakable')) {
+        console.log(`Applying ${marginTop}px margin to unbreakable element at path ${pathKey}`);
+        return React.cloneElement(node, {
+          ...props,
+          style: {
+            ...props.style,
+            marginTop: `${marginTop}px`
+          }
+        });
+      }
+      
+      // Recursively process children
+      if (props.children) {
+        let processedChildren: React.ReactNode;
+        if (Array.isArray(props.children)) {
+          processedChildren = props.children.map((child: any, index: number) => 
+            applyMargin(child, [...path, index])
+          );
+        } else {
+          processedChildren = applyMargin(props.children, [...path, 0]);
+        }
+        
+        return React.cloneElement(node, props, processedChildren);
+      }
+      
+      return node;
+    } else if (Array.isArray(node)) {
+      return node.map((child: any, index: number) => 
+        applyMargin(child, [...path, index])
+      );
+    }
+    
+    return node;
+  };
+  
+  return applyMargin(children);
+};
+
 // Helper function to recursively find unbreakable elements and iframes
-const findUnbreakableElements = (children: React.ReactNode, container?: HTMLElement): { 
+const findUnbreakableElements = (children: React.ReactNode): { 
   element: React.ReactElement, 
   bounds?: DOMRect,
   isIframe?: boolean,
-  srcDoc?: string 
+  srcDoc?: string,
+  path: number[]
 }[] => {
   const unbreakableElements: { 
     element: React.ReactElement, 
     bounds?: DOMRect,
     isIframe?: boolean,
-    srcDoc?: string 
+    srcDoc?: string,
+    path: number[]
   }[] = [];
   
-  const traverse = (node: React.ReactNode) => {
+  const traverse = (node: React.ReactNode, path: number[] = []) => {
     if (!node) return;
     console.log('Traversing node:', node);
     if (React.isValidElement(node)) {
@@ -146,7 +234,8 @@ const findUnbreakableElements = (children: React.ReactNode, container?: HTMLElem
         unbreakableElements.push({ 
           element: node, 
           isIframe: true, 
-          srcDoc: props.srcDoc 
+          srcDoc: props.srcDoc,
+          path
         });
         return; // Don't traverse children of iframe
       }
@@ -154,15 +243,23 @@ const findUnbreakableElements = (children: React.ReactNode, container?: HTMLElem
       // Check if this element has className="unbreakable"
       if (typeof props.className === 'string' && 
           props.className.includes('skrift-unbreakable')) {
-        unbreakableElements.push({ element: node });
+        unbreakableElements.push({ element: node, path });
       }
       
       // Recursively check children
       if (props.children) {
-        traverse(props.children);
+        if (Array.isArray(props.children)) {
+          props.children.forEach((child: any, index: number) => {
+            traverse(child, [...path, index]);
+          });
+        } else {
+          traverse(props.children, [...path, 0]);
+        }
       }
     } else if (Array.isArray(node)) {
-      node.forEach(traverse);
+      node.forEach((child: any, index: number) => {
+        traverse(child, [...path, index]);
+      });
     }
   };
   
@@ -208,13 +305,17 @@ export const PagedContent: React.FC<PagedContentProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<React.ReactNode[]>([]);
-  const [isReady, setIsReady] = useState(false);
+  const [processedChildren, setProcessedChildren] = useState<React.ReactNode>(children);
+  const [hasAppliedMargins, setHasAppliedMargins] = useState(false);
 
   useLayoutEffect(() => {
     if (!containerRef.current || !measureRef.current || !children) return;
     
     const measureAndPaginate = async () => {
       if (!measureRef.current) return;
+      
+      // Reset margins flag when children change
+      setHasAppliedMargins(false);
 
       // Find all unbreakable elements
       const unbreakableElements = findUnbreakableElements(children);
@@ -281,7 +382,7 @@ export const PagedContent: React.FC<PagedContentProps> = ({
             }))
             .filter(item => item.spanInfo.spansMultiplePages);
           
-          if (spanningElements.length > 0) {
+          if (spanningElements.length > 0 && !hasAppliedMargins) {
             console.warn(`🚨 ${spanningElements.length} unbreakable elements span multiple pages:`, 
               spanningElements.map(item => ({
                 elementIndex: item.index + 1,
@@ -289,32 +390,105 @@ export const PagedContent: React.FC<PagedContentProps> = ({
                 height: `${item.spanInfo.elementHeight}px`
               }))
             );
-          } else {
+            
+            // Calculate margins for spanning elements
+            const unbreakableMargins = new Map<string, number>();
+            const iframeMargins = new Map<string, number>();
+            const domUnbreakables = Array.from(measureRef.current.querySelectorAll('.skrift-unbreakable'));
+
+            
+            spanningElements.forEach((item) => {
+              const relativeTop = item.bounds.top - containerBounds.top;
+              const currentPage = Math.floor(relativeTop / effectivePageHeight) + 1;
+              const currentPageStart = (currentPage - 1) * effectivePageHeight;
+              const positionInPage = relativeTop - currentPageStart;
+              const marginNeeded = effectivePageHeight - positionInPage;
+              
+              // Check if this is an element inside an iframe (from iframe bounds)
+              const isFromIframe = item.index >= regularUnbreakableBounds.length;
+              
+              if (isFromIframe) {
+                // This is an unbreakable element inside an iframe
+                // Find the corresponding iframe element in React tree
+                const iframeIndex = item.index - regularUnbreakableBounds.length;
+                const iframeElement = iframeElements[Math.floor(iframeIndex / iframeBounds.length * iframeElements.length)];
+                
+                if (iframeElement && iframeElement.path) {
+                  const pathKey = iframeElement.path.join('-');
+                  iframeMargins.set(pathKey, marginNeeded);
+                  console.log(`Applied margin ${marginNeeded}px to iframe at path ${pathKey}`);
+                }
+              } else {
+                // This is a regular unbreakable element
+                const domElement = domUnbreakables[item.index];
+                if (domElement) {
+                  const pathKey = item.index.toString();
+                  unbreakableMargins.set(pathKey, marginNeeded);
+                  console.log(`Applied margin ${marginNeeded}px to unbreakable element at index ${item.index}`);
+                }
+              }
+            });
+            
+            // Apply margins to children
+            const updatedChildren = applyMarginToUnbreakableElements(children, unbreakableMargins, iframeMargins);
+            setProcessedChildren(updatedChildren);
+            setHasAppliedMargins(true);
+            
+            // Continue with pagination using updated children
+            setTimeout(() => {
+              if (measureRef.current) {
+                const newContentHeight = measureRef.current.scrollHeight;
+                const newPagesNeeded = Math.max(1, Math.ceil(newContentHeight / effectivePageHeight));
+                
+                const finalPages: React.ReactNode[] = [];
+                for (let i = 0; i < newPagesNeeded; i++) {
+                  const pageContent = (
+                    <div
+                      key={i}
+                      style={{
+                        transform: `translateY(-${i * effectivePageHeight}px)`,
+                        width: '100%',
+                        position: 'relative'
+                      }}
+                    >
+                      {updatedChildren}
+                    </div>
+                  );
+                  finalPages.push(pageContent);
+                }
+                setPages(finalPages);
+              }
+            }, 50);
+            return; // Exit early to prevent normal pagination
+          } else if (!hasAppliedMargins) {
             console.log('✅ All unbreakable elements are contained within single pages');
+            setProcessedChildren(children);
           }
         }
       }, 100); // Increased timeout to allow iframe processing
 
       const newPages: React.ReactNode[] = [];
 
-      for (let i = 0; i < pagesNeeded; i++) {
-        const pageContent = (
-          <div
-            key={i}
-            style={{
-              transform: `translateY(-${i * effectivePageHeight}px)`,
-              width: '100%',
-              position: 'relative'
-            }}
-          >
-            {children}
-          </div>
-        );
-        newPages.push(pageContent);
-      }
+      // Only create pages if we haven't applied margins (normal case) or if we're not in the margin application phase
+      if (!hasAppliedMargins) {
+        for (let i = 0; i < pagesNeeded; i++) {
+          const pageContent = (
+            <div
+              key={i}
+              style={{
+                transform: `translateY(-${i * effectivePageHeight}px)`,
+                width: '100%',
+                position: 'relative'
+              }}
+            >
+              {processedChildren}
+            </div>
+          );
+          newPages.push(pageContent);
+        }
 
-      setPages(newPages);
-      setIsReady(true);
+        setPages(newPages);
+      }
     };
 
     measureAndPaginate();
@@ -345,7 +519,7 @@ export const PagedContent: React.FC<PagedContentProps> = ({
           visibility: 'hidden'
         }}
       >
-        {children}
+        {processedChildren}
       </div>
       {
         pages.map((pageContent, index) => (

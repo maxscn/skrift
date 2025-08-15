@@ -43,10 +43,10 @@ const PPI = 96; // Pixels per inch, commonly used for web and screen displays
 const MM_PER_INCH = 25.4; // Millimeters to inches conversion factor
 const MM_TO_PX = (mm: number) => Math.round(mm / MM_PER_INCH * PPI);
 
-const VIEW_PRESETS: PresetOption[] = [
+export const VIEW_PRESETS: PresetOption[] = [
   { name: 'A4', dimensions: { width: MM_TO_PX(210), height: MM_TO_PX(297) } },
   { name: 'A5', dimensions: { width: MM_TO_PX(148), height: MM_TO_PX(210) } },
-];
+] as const;
 
 const inputVariant = {
   active: {
