@@ -123,7 +123,6 @@ export const ResizableWrapper = ({
         <PagedContent pageHeight={preset.height} pageWidth={preset.width} gapSize={20}>
           {children}
         </PagedContent>
-        <div id="measure-layer" style={{display: "hidden"}} />
 
       </div>
     );

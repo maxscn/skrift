@@ -172,7 +172,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
               >
                 {!!currentPreset ?
                   <MeasuredIframe
-                    className=" rounded-lg bg-white [color-scheme:auto]"
+                    className=" bg-white [color-scheme:auto]"
                     ref={(iframe) => {
                       if (iframe) {
                         return makeIframeDocumentBubbleEvents(iframe);
@@ -183,7 +183,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
                     srcDoc={renderedDocumentMetadata.markup} />
 
                   : <iframe
-                    className=" rounded-lg bg-white [color-scheme:auto]"
+                    className="bg-white [color-scheme:auto]"
                     ref={(iframe) => {
                       if (iframe) {
                         return makeIframeDocumentBubbleEvents(iframe);

@@ -69,7 +69,6 @@ const PageGap: React.FC<PageGapProps> = ({ gapSize = 20 }) => {
         margin: '20px 0'
       }}
     >
-   ´
     </div>
   );
 };
@@ -80,6 +79,125 @@ interface PagedContentProps {
   pageWidth?: number;
   gapSize?: number;
 }
+
+// Helper function to parse srcDoc content and find unbreakable elements
+const parseSrcDocForUnbreakableElements = async (srcDoc: string): Promise<DOMRect[]> => {
+  return new Promise((resolve) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.visibility = 'hidden';
+    iframe.style.width = '800px'; // Match pageWidth
+    iframe.style.height = 'auto';
+    iframe.srcdoc = srcDoc;
+    
+    iframe.onload = () => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (!iframeDoc) {
+          resolve([]);
+          return;
+        }
+        
+        const elements = iframeDoc.querySelectorAll('.skrift-unbreakable');
+        const bounds = Array.from(elements).map(el => el.getBoundingClientRect());
+        
+        document.body.removeChild(iframe);
+        resolve(bounds);
+      } catch (error) {
+        console.warn('Error parsing iframe srcDoc:', error);
+        document.body.removeChild(iframe);
+        resolve([]);
+      }
+    };
+    
+    iframe.onerror = () => {
+      document.body.removeChild(iframe);
+      resolve([]);
+    };
+    
+    document.body.appendChild(iframe);
+  });
+};
+
+// Helper function to recursively find unbreakable elements and iframes
+const findUnbreakableElements = (children: React.ReactNode, container?: HTMLElement): { 
+  element: React.ReactElement, 
+  bounds?: DOMRect,
+  isIframe?: boolean,
+  srcDoc?: string 
+}[] => {
+  const unbreakableElements: { 
+    element: React.ReactElement, 
+    bounds?: DOMRect,
+    isIframe?: boolean,
+    srcDoc?: string 
+  }[] = [];
+  
+  const traverse = (node: React.ReactNode) => {
+    if (!node) return;
+    console.log('Traversing node:', node);
+    if (React.isValidElement(node)) {
+      const props = node.props as any;
+      
+      // Check if this is an iframe with srcDoc
+      if (props.srcDoc) {
+        console.log('Found iframe with srcDoc');
+        unbreakableElements.push({ 
+          element: node, 
+          isIframe: true, 
+          srcDoc: props.srcDoc 
+        });
+        return; // Don't traverse children of iframe
+      }
+      
+      // Check if this element has className="unbreakable"
+      if (typeof props.className === 'string' && 
+          props.className.includes('skrift-unbreakable')) {
+        unbreakableElements.push({ element: node });
+      }
+      
+      // Recursively check children
+      if (props.children) {
+        traverse(props.children);
+      }
+    } else if (Array.isArray(node)) {
+      node.forEach(traverse);
+    }
+  };
+  
+  traverse(children);
+  return unbreakableElements;
+};
+
+// Helper function to get element bounds by className
+const getUnbreakableElementBounds = (container: HTMLElement, className: string = 'unbreakable'): DOMRect[] => {
+  const elements = container.querySelectorAll(`.${className}`);
+  return Array.from(elements).map(el => el.getBoundingClientRect());
+};
+
+// Helper function to check if an element spans multiple pages
+const checkElementPageSpan = (elementBounds: DOMRect, containerBounds: DOMRect, pageHeight: number): { 
+  spansMultiplePages: boolean, 
+  startPage: number, 
+  endPage: number,
+  elementHeight: number 
+} => {
+  // Calculate relative position within the container
+  const relativeTop = elementBounds.top - containerBounds.top;
+  const relativeBottom = relativeTop + elementBounds.height;
+  
+  // Calculate which pages this element spans
+  const startPage = Math.floor(relativeTop / pageHeight) + 1;
+  const endPage = Math.floor((relativeBottom - 1) / pageHeight) + 1;
+  
+  return {
+    spansMultiplePages: startPage !== endPage,
+    startPage,
+    endPage,
+    elementHeight: elementBounds.height
+  };
+};
 
 export const PagedContent: React.FC<PagedContentProps> = ({
   children,
@@ -94,19 +212,91 @@ export const PagedContent: React.FC<PagedContentProps> = ({
 
   useLayoutEffect(() => {
     if (!containerRef.current || !measureRef.current || !children) return;
-    console.log(children)
-    const measureAndPaginate = () => {
+    
+    const measureAndPaginate = async () => {
       if (!measureRef.current) return;
+
+      // Find all unbreakable elements
+      const unbreakableElements = findUnbreakableElements(children);
+      console.log('Found unbreakable elements:', unbreakableElements.map(item => item.element));
 
       measureRef.current.style.height = 'auto';
       measureRef.current.style.overflow = 'visible';
 
       const contentHeight = measureRef.current.scrollHeight;
-      const effectivePageHeight = pageHeight; // Account for padding
+      const effectivePageHeight = pageHeight;
       const pagesNeeded = Math.max(1, Math.ceil(contentHeight / effectivePageHeight));
-      console.log(pagesNeeded)
-      console.log(contentHeight);
+      
+      console.log('Pages needed:', pagesNeeded);
+      console.log('Content height:', contentHeight);
+
+      // Process iframe elements with srcDoc
+      const iframeElements = unbreakableElements.filter(item => item.isIframe && item.srcDoc);
+      let iframeBounds: DOMRect[] = [];
+
+      if (iframeElements.length > 0) {
+        console.log('Processing iframe elements with srcDoc...');
+        try {
+          for (const iframeItem of iframeElements) {
+            if (iframeItem.srcDoc) {
+              const bounds = await parseSrcDocForUnbreakableElements(iframeItem.srcDoc);
+              iframeBounds.push(...bounds);
+            }
+          }
+          console.log('Found unbreakable elements in iframes:', iframeBounds.length);
+        } catch (error) {
+          console.warn('Error processing iframe srcDoc:', error);
+        }
+      }
+
+      // After the content is rendered, check for page spans
+      setTimeout(() => {
+        if (measureRef.current) {
+          const containerBounds = measureRef.current.getBoundingClientRect();
+          const regularUnbreakableBounds = getUnbreakableElementBounds(measureRef.current);
+          const allUnbreakableBounds = [...regularUnbreakableBounds, ...iframeBounds];
+          
+          console.log('=== UNBREAKABLE ELEMENTS PAGE SPAN ANALYSIS ===');
+          console.log(`Regular elements: ${regularUnbreakableBounds.length}, Iframe elements: ${iframeBounds.length}`);
+          
+          allUnbreakableBounds.forEach((bounds, index) => {
+            const spanInfo = checkElementPageSpan(bounds, containerBounds, effectivePageHeight);
+            
+            console.log(`Unbreakable element ${index + 1}:`, {
+              height: `${spanInfo.elementHeight}px`,
+              spansMultiplePages: spanInfo.spansMultiplePages,
+              pageRange: spanInfo.spansMultiplePages 
+                ? `Pages ${spanInfo.startPage}-${spanInfo.endPage}` 
+                : `Page ${spanInfo.startPage}`,
+              warning: spanInfo.spansMultiplePages ? '⚠️ SPANS MULTIPLE PAGES!' : '✅ Contained in single page'
+            });
+          });
+          
+          // Find elements that span multiple pages
+          const spanningElements = allUnbreakableBounds
+            .map((bounds, index) => ({ 
+              index, 
+              bounds, 
+              spanInfo: checkElementPageSpan(bounds, containerBounds, effectivePageHeight) 
+            }))
+            .filter(item => item.spanInfo.spansMultiplePages);
+          
+          if (spanningElements.length > 0) {
+            console.warn(`🚨 ${spanningElements.length} unbreakable elements span multiple pages:`, 
+              spanningElements.map(item => ({
+                elementIndex: item.index + 1,
+                pageRange: `${item.spanInfo.startPage}-${item.spanInfo.endPage}`,
+                height: `${item.spanInfo.elementHeight}px`
+              }))
+            );
+          } else {
+            console.log('✅ All unbreakable elements are contained within single pages');
+          }
+        }
+      }, 100); // Increased timeout to allow iframe processing
+
       const newPages: React.ReactNode[] = [];
+
       for (let i = 0; i < pagesNeeded; i++) {
         const pageContent = (
           <div
@@ -129,7 +319,9 @@ export const PagedContent: React.FC<PagedContentProps> = ({
 
     measureAndPaginate();
 
-    const resizeObserver = new ResizeObserver(measureAndPaginate);
+    const resizeObserver = new ResizeObserver(() => {
+      measureAndPaginate();
+    });
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
