@@ -6,6 +6,9 @@ import { IconArrowDown } from '../icons/icon-arrow-down';
 import { Tooltip } from '../tooltip';
 import { PAGE_SIZES, PageSize, ViewDimensions } from '@skrift/components';
 
+export type PresetOption = PageSize;
+export const VIEW_PRESETS = PAGE_SIZES;
+
 
 
 interface ViewSizeControlsProps {

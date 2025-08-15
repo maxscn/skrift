@@ -603,18 +603,23 @@ export const PagedContent: React.FC<PagedContentProps> = ({
                 // already factors in its existing margin, so we need additional margin on top
                 const adjustedMarginNeeded = baseMarginNeeded + existingMarginTop;
                 
-                // Apply to all iframes that contain unbreakable elements
-                iframeElements.forEach((iframeElement) => {
-                  if (iframeElement && iframeElement.path) {
-                    const pathKey = iframeElement.path.join('-');
-                    // Only set if not already set (avoid overwriting with smaller values)
-                    const existingMargin = iframeMargins.get(pathKey) || 0;
-                    if (adjustedMarginNeeded > existingMargin) {
-                      iframeMargins.set(pathKey, adjustedMarginNeeded);
-                      console.log(`Applied margin ${adjustedMarginNeeded}px to iframe at path ${pathKey} (base: ${baseMarginNeeded}px + existing: ${existingMarginTop}px)`);
+                // Do not apply margin if it's bigger than the page height
+                if (adjustedMarginNeeded <= effectivePageHeight) {
+                  // Apply to all iframes that contain unbreakable elements
+                  iframeElements.forEach((iframeElement) => {
+                    if (iframeElement && iframeElement.path) {
+                      const pathKey = iframeElement.path.join('-');
+                      // Only set if not already set (avoid overwriting with smaller values)
+                      const existingMargin = iframeMargins.get(pathKey) || 0;
+                      if (adjustedMarginNeeded > existingMargin) {
+                        iframeMargins.set(pathKey, adjustedMarginNeeded);
+                        console.log(`Applied margin ${adjustedMarginNeeded}px to iframe at path ${pathKey} (base: ${baseMarginNeeded}px + existing: ${existingMarginTop}px)`);
+                      }
                     }
-                  }
-                });
+                  });
+                } else {
+                  console.log(`Skipping margin application for iframe: ${adjustedMarginNeeded}px exceeds page height ${effectivePageHeight}px`);
+                }
               } else {
                 // This is a regular unbreakable element - account for existing margins
                 const domElement = domUnbreakables[item.index];
@@ -628,21 +633,26 @@ export const PagedContent: React.FC<PagedContentProps> = ({
                     // and we need additional margin on top to push it to the next page
                     const adjustedMarginNeeded = baseMarginNeeded + existingMargins.totalVerticalMargin;
                     
-                    const pathKey = reactElementInfo.path.join('-');
-                    unbreakableMargins.set(pathKey, adjustedMarginNeeded);
-                    
-                    console.log(`Applied margin ${adjustedMarginNeeded}px to unbreakable element at path ${pathKey}`, {
-                      baseMarginNeeded,
-                      totalVerticalMargin: existingMargins.totalVerticalMargin,
-                      existingMargins,
-                      finalMargin: adjustedMarginNeeded,
-                      elementBounds: {
-                        top: item.bounds.top,
-                        height: item.bounds.height,
-                        relativeTop: relativeTop,
-                        nextPageStart: nextPageStart
-                      }
-                    });
+                    // Do not apply margin if it's bigger than the page height
+                    if (adjustedMarginNeeded <= effectivePageHeight) {
+                      const pathKey = reactElementInfo.path.join('-');
+                      unbreakableMargins.set(pathKey, adjustedMarginNeeded);
+                      
+                      console.log(`Applied margin ${adjustedMarginNeeded}px to unbreakable element at path ${pathKey}`, {
+                        baseMarginNeeded,
+                        totalVerticalMargin: existingMargins.totalVerticalMargin,
+                        existingMargins,
+                        finalMargin: adjustedMarginNeeded,
+                        elementBounds: {
+                          top: item.bounds.top,
+                          height: item.bounds.height,
+                          relativeTop: relativeTop,
+                          nextPageStart: nextPageStart
+                        }
+                      });
+                    } else {
+                      console.log(`Skipping margin application for element: ${adjustedMarginNeeded}px exceeds page height ${effectivePageHeight}px`);
+                    }
                   }
                 }
               }

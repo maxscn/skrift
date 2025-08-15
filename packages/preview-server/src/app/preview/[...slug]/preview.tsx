@@ -17,6 +17,7 @@ import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
 import { VIEW_PRESETS, ViewSizeControls } from '../../../components/topbar/view-size-controls';
 import type { PresetOption } from '../../../components/topbar/view-size-controls';
+import { PAGE_SIZES } from '@skrift/components';
 import { PreviewContext } from '../../../contexts/preview';
 import { useClampedState } from '../../../hooks/use-clamped-state';
 import { cn } from '../../../utils';
@@ -61,6 +62,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   const minHeight = 100;
   const storedWidth = searchParams.get('width');
   const storedHeight = searchParams.get('height');
+  const storedPageSize = searchParams.get('pageSize');
   const [width, setWidth] = useClampedState(
     storedWidth ? Number.parseInt(storedWidth) : 600,
     minWidth,
@@ -71,12 +73,19 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
     minHeight,
     maxHeight,
   );
-  const [currentPreset, setCurrentPreset] = useState<PresetOption | undefined>(VIEW_PRESETS?.[0]);
+  const [currentPreset, setCurrentPreset] = useState<PresetOption | undefined>(
+    storedPageSize ? PAGE_SIZES.find(p => p.name === storedPageSize) : VIEW_PRESETS?.[0]
+  );
 
   const handleSaveViewSize = useDebouncedCallback(() => {
     const params = new URLSearchParams(searchParams);
     params.set('width', width.toString());
     params.set('height', height.toString());
+    if (currentPreset) {
+      params.set('pageSize', currentPreset.name);
+    } else {
+      params.delete('pageSize');
+    }
     router.push(`${pathname}?${params.toString()}${location.hash}`);
   }, 300);
 
@@ -100,7 +109,12 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           }}
           viewHeight={height}
           viewWidth={width}
-          onPresetChange={setCurrentPreset}
+          onPresetChange={(preset) => {
+            setCurrentPreset(preset);
+            flushSync(() => {
+              handleSaveViewSize();
+            });
+          }}
         />
         <ActiveViewToggleGroup
           activeView={activeView}

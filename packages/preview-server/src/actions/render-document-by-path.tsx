@@ -27,10 +27,12 @@ const cache = new Map<string, DocumentRenderingResult>();
 export const renderDocumentByPath = async (
   documentPath: string,
   invalidatingCache = false,
+  pageSize?: string,
 ): Promise<DocumentRenderingResult> => {
-  if (invalidatingCache) cache.delete(documentPath);
+  const cacheKey = `${documentPath}${pageSize ? `__${pageSize}` : ''}`;
+  if (invalidatingCache) cache.delete(cacheKey);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (cache.has(documentPath)) return cache.get(documentPath)!;
+  if (cache.has(cacheKey)) return cache.get(cacheKey)!;
 
   const timeBeforeDocumentRendered = performance.now();
 
@@ -62,13 +64,18 @@ export const renderDocumentByPath = async (
   } = componentResult;
 
   const previewProps = Document.PreviewProps || {};
-  const DocumentComponent = Document as React.FC;
+  const DocumentComponent = Document as React.FC<any>;
+  const componentProps = { 
+    ...previewProps,
+    ...(pageSize && { pageSize })
+  };
+  
   try {
-    const markup = await render(createElement(DocumentComponent, previewProps), {
+    const markup = await render(createElement(DocumentComponent, componentProps), {
       pretty: true,
     });
     const plainText = await render(
-      createElement(DocumentComponent, previewProps),
+      createElement(DocumentComponent, componentProps),
       {
         plainText: true,
       },
@@ -99,7 +106,7 @@ export const renderDocumentByPath = async (
       reactMarkup,
     };
 
-    cache.set(documentPath, renderingResult);
+    cache.set(cacheKey, renderingResult);
 
     return renderingResult;
   } catch (exception) {

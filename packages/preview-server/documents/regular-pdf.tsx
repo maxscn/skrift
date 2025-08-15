@@ -1,33 +1,54 @@
 import {
   Document,
+  Page,
   Tailwind,
-  Unbreakable
+  Unbreakable,
+  usePageSize
 } from '@skrift/components';
-interface RegularPDFProps {}
+interface RegularPDFProps {
+  // pageSize is automatically provided by the server-side rendering
+  // when a page size is selected in the preview UI
+  pageSize?: string;
+}
+
+const PageSizeDemo = () => {
+  const pageSize = usePageSize();
+  return (
+    <div className="bg-blue-500 text-white p-4 rounded">
+      <p className="text-sm font-bold">Current Page Size: {pageSize?.name || 'Default'}</p>
+      <p className="text-xs">
+        Dimensions: {pageSize?.dimensions.width || 'unknown'}px × {pageSize?.dimensions.height || 'unknown'}px
+      </p>
+    </div>
+  );
+};
 
 
 export const RegularPDF = ({
+  pageSize
 }: RegularPDFProps) => (
-  <Document>
+  <Document pageSize={pageSize}>
     <Tailwind>
       <head />
+      
+      <Page>
+        <PageSizeDemo />
+        <p className="text-black mt-4">This content is now inside a Page component that responds to the selected page size.</p>
+      </Page>
 
-      <div className="bg-red-500 w-full" style={{ height: 1123 }}>
-        <p className="text-white mt-0">This is a test paragraph inside a red box.</p>
-      </div>
-      <div className="bg-red-500 w-full mt-4 " style={{ height: 1000 }}>
-        <p className="text-white mb-4">This is a test paragraph inside a red box.</p>
-      </div>
-      <div className="bg-red-500 w-full " style={{ height: 1000 }}>
-        <p style={{height: 998}}>whatever</p>
-        <p className="text-white">This is a test paragraph inside a red box.</p>
-      </div>
-      <Unbreakable>
-
-        <div className="bg-red-500 w-full mt-[194px]" style={{ height: 600 }}>
-          <p className="text-white mt-10 pt-5">This is a test paragraph inside a red box.</p>
+      <Page>
+        <div className="bg-red-500 w-full h-96">
+          <p className="text-white p-4 mt-0">This is page 2 with the red background, now using responsive Page components.</p>
         </div>
-      </Unbreakable>
+      </Page>
+      
+      <Page>
+        <Unbreakable>
+          <div className="bg-green-500 w-full h-64">
+            <p className="text-white p-4 mt-0">This is page 3 inside an Unbreakable component.</p>
+          </div>
+        </Unbreakable>
+      </Page>
     </Tailwind>
   </Document>
 );

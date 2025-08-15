@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createContext } from 'react';
 import type {
   DocumentRenderingResult,
@@ -8,6 +8,7 @@ import type {
 import { isBuilding, isPreviewDevelopment } from '../app/env';
 import { useDocumentRenderingResult } from '../hooks/use-document-rendering-result';
 import { useHotreload } from '../hooks/use-hot-reload';
+import { usePageSizeRendering } from '../hooks/use-page-size-rendering';
 import { useRenderingMetadata } from '../hooks/use-rendering-metadata';
 
 export const PreviewContext = createContext<
@@ -37,10 +38,20 @@ export const PreviewProvider = ({
   children,
 }: PreviewProvider) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const renderingResult = useDocumentRenderingResult(
+  const baseRenderingResult = useDocumentRenderingResult(
     documentPath,
     serverRenderingResult,
+  );
+
+  // Automatically read pageSize from URL search params
+  const currentPageSize = searchParams.get('pageSize');
+
+  const { renderingResult } = usePageSizeRendering(
+    documentPath,
+    baseRenderingResult,
+    currentPageSize,
   );
 
   const renderedDocumentMetadata = useRenderingMetadata(

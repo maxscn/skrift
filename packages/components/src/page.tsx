@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { Unbreakable } from './unbreakable';
+import { useGlobalPageSize } from './document';
 
 const PPI = 96; // Pixels per inch, commonly used for web and screen displays
 const MM_PER_INCH = 25.4; // Millimeters to inches conversion factor
@@ -14,6 +15,12 @@ export interface PageSize {
   name: string;
   dimensions: ViewDimensions;
 }
+
+const PageSizeContext = createContext<PageSize | null>(null);
+
+export const usePageSize = () => {
+  return useContext(PageSizeContext);
+};
 
 export const PAGE_SIZES = [
   { name: 'Letter', dimensions: { width: MM_TO_PX(216), height: MM_TO_PX(279) } },
@@ -42,23 +49,27 @@ export const Page: React.FC<PageProps> = ({
   children, 
   className = '', 
   style = {},
-  size = 'A4',
+  size,
   ...props 
 }) => {
-  const currentPreset = PAGE_SIZES.find(p => p.name === size);
+  const globalPageSize = useGlobalPageSize();
+  const effectiveSize = size || globalPageSize || 'A4';
+  const currentPreset = PAGE_SIZES.find(p => p.name === effectiveSize);
   const pageStyle: React.CSSProperties = {
     ...currentPreset?.dimensions,
     ...style
   };
 
   return (
-    <Unbreakable
-      className={`skrift-page ${className}`}
-      style={pageStyle}
-      data-unbreakable="true"
-      {...props}
-    >
-      {children}
-    </Unbreakable>
+    <PageSizeContext.Provider value={currentPreset || null}>
+      <Unbreakable
+        className={`skrift-page ${className}`}
+        style={pageStyle}
+        data-unbreakable="true"
+        {...props}
+      >
+        {children}
+      </Unbreakable>
+    </PageSizeContext.Provider>
   );
 };

@@ -30,13 +30,17 @@ export interface PreviewParams {
 
 const Page = async ({
   params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
   params: Promise<PreviewParams>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
   // will come in here as segments of a relative path to the document
   // ex: ['authentication', 'verify-password.tsx']
   const slug = decodeURIComponent(params.slug.join('/'));
+  const pageSize = typeof searchParams.pageSize === 'string' ? searchParams.pageSize : undefined;
   const documentsDirMetadata = await getDocumentsDirectoryMetadata(
     documentsDirectoryAbsolutePath,
   );
@@ -60,7 +64,7 @@ This is most likely not an issue with the preview server. Maybe there was a typo
     throw exception;
   }
 
-  const serverDocumentRenderingResult = await renderDocumentByPath(documentPath);
+  const serverDocumentRenderingResult = await renderDocumentByPath(documentPath, false, pageSize);
 
   let lintingRows: LintingRow[] | undefined;
   let compatibilityCheckingResults: CompatibilityCheckingResult[] | undefined;
