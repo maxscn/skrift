@@ -16,11 +16,7 @@ export interface PageSize {
   dimensions: ViewDimensions;
 }
 
-const PageSizeContext = createContext<PageSize | null>(null);
 
-export const usePageSize = () => {
-  return useContext(PageSizeContext);
-};
 
 export const PAGE_SIZES = [
   { name: 'Letter', dimensions: { width: MM_TO_PX(216), height: MM_TO_PX(279) } },
@@ -44,6 +40,12 @@ interface PageProps {
 
 
 
+export const usePageSize = () => {
+  const globalPageSize = useGlobalPageSize();
+  const effectiveSize =  globalPageSize || 'A4';
+  const currentPreset = PAGE_SIZES.find(p => p.name === effectiveSize);
+  return currentPreset 
+};
 
 export const Page: React.FC<PageProps> = ({ 
   children, 
@@ -52,16 +54,14 @@ export const Page: React.FC<PageProps> = ({
   size,
   ...props 
 }) => {
-  const globalPageSize = useGlobalPageSize();
-  const effectiveSize = size || globalPageSize || 'A4';
-  const currentPreset = PAGE_SIZES.find(p => p.name === effectiveSize);
+  const currentPreset = usePageSize();
+
   const pageStyle: React.CSSProperties = {
     ...currentPreset?.dimensions,
     ...style
   };
 
   return (
-    <PageSizeContext.Provider value={currentPreset || null}>
       <Unbreakable
         className={`skrift-page ${className}`}
         style={pageStyle}
@@ -70,6 +70,5 @@ export const Page: React.FC<PageProps> = ({
       >
         {children}
       </Unbreakable>
-    </PageSizeContext.Provider>
   );
 };

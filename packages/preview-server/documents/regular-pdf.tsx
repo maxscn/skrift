@@ -13,6 +13,7 @@ interface RegularPDFProps {
 
 const PageSizeDemo = () => {
   const pageSize = usePageSize();
+  
   return (
     <div className="bg-blue-500 text-white p-4 rounded">
       <p className="text-sm font-bold">Current Page Size: {pageSize?.name || 'Default'}</p>

@@ -1,13 +1,9 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { motion } from 'framer-motion';
 import * as React from 'react';
 import { cn } from '../../utils';
 import { IconArrowDown } from '../icons/icon-arrow-down';
-import { Tooltip } from '../tooltip';
 import { PAGE_SIZES, PageSize, ViewDimensions } from '@skrift/components';
 
-export type PresetOption = PageSize;
-export const VIEW_PRESETS = PAGE_SIZES;
 
 
 
@@ -16,19 +12,9 @@ interface ViewSizeControlsProps {
   setViewWidth: (width: number) => void;
   viewHeight: number;
   setViewHeight: (height: number) => void;
-  onPresetChange?: (preset: PageSize | undefined) => void;
+  onPresetChange?: (preset: PageSize) => void;
 }
 
-interface DimensionInputProps {
-  icon: React.ReactNode;
-  isActive: boolean;
-  label: string;
-  onBlur: () => void;
-  onChange: (value: number) => void;
-  setIsActive: (active: boolean) => void;
-  value: number;
-  hasBorder?: boolean;
-}
 
 
 interface PresetMenuItemProps {
@@ -37,74 +23,8 @@ interface PresetMenuItemProps {
   onSelect: (dimensions: ViewDimensions) => void;
 }
 
-const inputVariant = {
-  active: {
-    width: '3.5rem',
-    padding: '0 0 0 0.5rem',
-  },
-  inactive: {
-    width: '0',
-  },
-};
 
-const DimensionInput = ({
-  icon,
-  isActive,
-  label,
-  onBlur,
-  onChange,
-  setIsActive,
-  value,
-  hasBorder,
-}: DimensionInputProps) => {
-  const inputRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
-    if (isActive && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isActive]);
-
-  const handleButtonClick = () => {
-    if (isActive) {
-      setIsActive(false);
-    } else {
-      setIsActive(true);
-    }
-  };
-
-  return (
-    <Tooltip.Provider>
-      <Tooltip>
-        <Tooltip.Trigger asChild>
-          <motion.button
-            onClick={handleButtonClick}
-            className={cn('relative flex items-center justify-center p-2', {
-              'border-slate-6 border-r': hasBorder,
-            })}
-          >
-            {icon}
-            <motion.input
-              ref={inputRef}
-              initial={false}
-              animate={isActive ? 'active' : 'inactive'}
-              className="arrow-hide relative flex h-8 items-center justify-center bg-black text-sm outline-none"
-              onChange={(e) => onChange(Number.parseInt(e.currentTarget.value))}
-              onBlur={onBlur}
-              type="number"
-              value={value}
-              variants={inputVariant}
-            />
-          </motion.button>
-        </Tooltip.Trigger>
-        <Tooltip.Content>
-          <span>{label}: </span>
-          <span className="font-mono">{value}px</span>
-        </Tooltip.Content>
-      </Tooltip>
-    </Tooltip.Provider>
-  );
-};
 
 const PresetMenuItem = ({
   name,
@@ -123,108 +43,27 @@ const PresetMenuItem = ({
 );
 
 export const ViewSizeControls = ({
-  viewWidth,
-  viewHeight,
   setViewWidth,
   setViewHeight,
   onPresetChange,
 }: ViewSizeControlsProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-  const [activeInput, setActiveInput] = React.useState<
-    'width' | 'height' | null
-  >(null);
-  const [activePreset, setActivePreset] = React.useState<PageSize | null>(null);
 
   const handlePresetSelect = (dimensions: ViewDimensions) => {
     const preset = PAGE_SIZES.find(p => 
       p.dimensions.width === dimensions.width && 
       p.dimensions.height === dimensions.height
-    );
+    )!;
     
     setViewWidth(dimensions.width);
     setViewHeight(dimensions.height);
-    setActivePreset(preset || null);
     onPresetChange?.(preset);
   };
 
-  const handleManualSizeChange = (newWidth?: number, newHeight?: number) => {
-    if (newWidth !== undefined) setViewWidth(newWidth);
-    if (newHeight !== undefined) setViewHeight(newHeight);
-    
-    const matchesPreset = PAGE_SIZES.find(p => 
-      p.dimensions.width === (newWidth ?? viewWidth) && 
-      p.dimensions.height === (newHeight ?? viewHeight)
-    );
-    
-    if (!matchesPreset && activePreset) {
-      setActivePreset(null);
-      onPresetChange?.(undefined);
-    }
-  };
 
-  const handleBlur = () => {
-    setActiveInput(null);
-  };
 
   return (
     <div className="relative flex h-9 w-fit overflow-hidden rounded-lg border border-slate-6 text-sm transition-colors duration-300 ease-in-out focus-within:border-slate-8 hover:border-slate-8">
-      <DimensionInput
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3" />
-            <path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3" />
-            <path d="M4 12H2" />
-            <path d="M10 12H8" />
-            <path d="M16 12h-2" />
-            <path d="M22 12h-2" />
-          </svg>
-        }
-        value={viewWidth}
-        onChange={(width) => handleManualSizeChange(width, undefined)}
-        isActive={activeInput === 'width'}
-        setIsActive={(active) => setActiveInput(active ? 'width' : null)}
-        onBlur={handleBlur}
-        label="Width"
-        hasBorder
-      />
-      <DimensionInput
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3" />
-            <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" />
-            <path d="M12 20v2" />
-            <path d="M12 14v2" />
-            <path d="M12 8v2" />
-            <path d="M12 2v2" />
-          </svg>
-        }
-        value={viewHeight}
-        onChange={(height) => handleManualSizeChange(undefined, height)}
-        isActive={activeInput === 'height'}
-        setIsActive={(active) => setActiveInput(active ? 'height' : null)}
-        onBlur={handleBlur}
-        label="Height"
-      />
       <DropdownMenu.Root open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
         <DropdownMenu.Trigger asChild>
           <button

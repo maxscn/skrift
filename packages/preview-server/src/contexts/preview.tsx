@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import type {
   DocumentRenderingResult,
   RenderedDocumentMetadata,
@@ -10,22 +10,31 @@ import { useDocumentRenderingResult } from '../hooks/use-document-rendering-resu
 import { useHotreload } from '../hooks/use-hot-reload';
 import { usePageSizeRendering } from '../hooks/use-page-size-rendering';
 import { useRenderingMetadata } from '../hooks/use-rendering-metadata';
+import { PAGE_SIZES } from '@skrift/components';
 
 export const PreviewContext = createContext<
   | {
       renderedDocumentMetadata: RenderedDocumentMetadata | undefined;
       renderingResult: DocumentRenderingResult;
-
+      pageSize?: typeof PAGE_SIZES[number]['name'];
       documentSlug: string;
       documentPath: string;
     }
   | undefined
 >(undefined);
 
+export const usePreviewContext = () => {
+  const context = useContext(PreviewContext);
+  if (!context) {
+    throw new Error('usePreviewContext must be used within a PreviewProvider');
+  }
+  return context;
+};
+
 interface PreviewProvider {
   documentSlug: string;
   documentPath: string;
-
+  pageSize?: typeof PAGE_SIZES[number]['name'];
   serverRenderingResult: DocumentRenderingResult;
 
   children: React.ReactNode;
@@ -34,26 +43,22 @@ interface PreviewProvider {
 export const PreviewProvider = ({
   documentSlug,
   documentPath,
+  pageSize,
   serverRenderingResult,
   children,
 }: PreviewProvider) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
   const baseRenderingResult = useDocumentRenderingResult(
     documentPath,
     serverRenderingResult,
   );
 
-  // Automatically read pageSize from URL search params
-  const currentPageSize = searchParams.get('pageSize');
 
   const { renderingResult } = usePageSizeRendering(
     documentPath,
     baseRenderingResult,
-    currentPageSize,
+    pageSize,
   );
-
   const renderedDocumentMetadata = useRenderingMetadata(
     documentPath,
     renderingResult,
@@ -80,6 +85,7 @@ export const PreviewProvider = ({
       value={{
         documentPath,
         documentSlug,
+        pageSize,
         renderedDocumentMetadata,
         renderingResult,
       }}

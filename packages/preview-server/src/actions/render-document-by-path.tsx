@@ -33,7 +33,6 @@ export const renderDocumentByPath = async (
   if (invalidatingCache) cache.delete(cacheKey);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (cache.has(cacheKey)) return cache.get(cacheKey)!;
-
   const timeBeforeDocumentRendered = performance.now();
 
   const documentFilename = path.basename(documentPath);

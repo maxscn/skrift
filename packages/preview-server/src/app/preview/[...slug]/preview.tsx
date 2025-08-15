@@ -15,9 +15,8 @@ import { Print } from '../../../components/print';
 import { useToolbarState } from '../../../components/toolbar';
 import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
-import { VIEW_PRESETS, ViewSizeControls } from '../../../components/topbar/view-size-controls';
-import type { PresetOption } from '../../../components/topbar/view-size-controls';
-import { PAGE_SIZES } from '@skrift/components';
+import {  ViewSizeControls } from '../../../components/topbar/view-size-controls';
+import { PAGE_SIZES, PageSize } from '@skrift/components';
 import { PreviewContext } from '../../../contexts/preview';
 import { useClampedState } from '../../../hooks/use-clamped-state';
 import { cn } from '../../../utils';
@@ -28,7 +27,7 @@ interface PreviewProps extends React.ComponentProps<'div'> {
 }
 
 const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
-  const { renderingResult, renderedDocumentMetadata } = use(PreviewContext)!;
+  const { renderingResult, renderedDocumentMetadata, pageSize: storedPageSize } = use(PreviewContext)!;
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -62,7 +61,6 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   const minHeight = 100;
   const storedWidth = searchParams.get('width');
   const storedHeight = searchParams.get('height');
-  const storedPageSize = searchParams.get('pageSize');
   const [width, setWidth] = useClampedState(
     storedWidth ? Number.parseInt(storedWidth) : 600,
     minWidth,
@@ -73,9 +71,9 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
     minHeight,
     maxHeight,
   );
-  const [currentPreset, setCurrentPreset] = useState<PresetOption | undefined>(
-    storedPageSize ? PAGE_SIZES.find(p => p.name === storedPageSize) : VIEW_PRESETS?.[0]
-  );
+  const backupPreset = PAGE_SIZES.find(p => p.name === 'A4')!
+  const [currentPreset, setCurrentPreset] = useState<PageSize>(
+    (storedPageSize ? PAGE_SIZES.find(p => p.name === storedPageSize) || backupPreset : backupPreset))
 
   const handleSaveViewSize = useDebouncedCallback(() => {
     const params = new URLSearchParams(searchParams);
@@ -158,33 +156,8 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           <>
             {activeView === 'preview' && (
               <ResizableWrapper
-                className="print:hidden"
-                minHeight={minHeight}
-                minWidth={minWidth}
-                maxHeight={maxHeight}
-                maxWidth={maxWidth}
-                height={height}
-                onResizeEnd={() => {
-                  handleSaveViewSize();
-                }}
-                onResize={(value, direction) => {
-                  const isHorizontal =
-                    direction === 'east' || direction === 'west';
-                  if (isHorizontal) {
-                    setWidth(Math.round(value));
-                  } else {
-                    setHeight(Math.round(value));
-                  }
-                }}
-                width={width}
-                preset={currentPreset ? {
-                  name: currentPreset.name,
-                  width: currentPreset.dimensions.width,
-                  height: currentPreset.dimensions.height
-                } : undefined}
-                isPaginationEnabled={!!currentPreset}
+                preset={currentPreset}
               >
-                {!!currentPreset ?
                   <MeasuredIframe
                     className=" bg-white [color-scheme:auto]"
                     ref={(iframe) => {
@@ -197,20 +170,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
                     style={{ width: `${width}px` }}
                     srcDoc={renderedDocumentMetadata.markup} />
 
-                  : <iframe
-                    className="bg-white [color-scheme:auto]"
-                    ref={(iframe) => {
-                      if (iframe) {
-                        return makeIframeDocumentBubbleEvents(iframe);
-                      }
-                    }}
-                    srcDoc={renderedDocumentMetadata.markup}
-                    style={{
-                      width: `${width}px`,
-                      height: `${height}px`,
-                    }}
-                    title={documentTitle}
-                  />}
+                  
               </ResizableWrapper>
             )}
 

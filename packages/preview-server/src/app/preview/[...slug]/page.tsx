@@ -19,6 +19,7 @@ import { documentsDirectoryAbsolutePath, isBuilding } from '../../env';
 import Preview from './preview';
 import { Print } from '../../../components/print';
 import PrintPreview from './print-preview';
+import { PAGE_SIZES } from '@skrift/components';
 
 export const dynamicParams = true;
 
@@ -37,10 +38,11 @@ const Page = async ({
 }) => {
   const params = await paramsPromise;
   const searchParams = await searchParamsPromise;
+  console.log("searchParams", searchParams)
   // will come in here as segments of a relative path to the document
   // ex: ['authentication', 'verify-password.tsx']
   const slug = decodeURIComponent(params.slug.join('/'));
-  const pageSize = typeof searchParams.pageSize === 'string' ? searchParams.pageSize : undefined;
+  const pageSize = typeof searchParams.pageSize === 'string' ? searchParams.pageSize as typeof PAGE_SIZES[number]['name'] : undefined;
   const documentsDirMetadata = await getDocumentsDirectoryMetadata(
     documentsDirectoryAbsolutePath,
   );
@@ -65,7 +67,6 @@ This is most likely not an issue with the preview server. Maybe there was a typo
   }
 
   const serverDocumentRenderingResult = await renderDocumentByPath(documentPath, false, pageSize);
-
   let lintingRows: LintingRow[] | undefined;
   let compatibilityCheckingResults: CompatibilityCheckingResult[] | undefined;
 
@@ -112,7 +113,9 @@ This is most likely not an issue with the preview server. Maybe there was a typo
     <PreviewProvider
       documentSlug={slug}
       documentPath={documentPath}
+      pageSize={pageSize}
       serverRenderingResult={serverDocumentRenderingResult}
+      key={documentPath + pageSize}
     >
       <Shell currentDocumentOpenSlug={slug}>
         {/* This suspense is so that this page doesn't throw warnings */}
