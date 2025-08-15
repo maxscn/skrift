@@ -16,6 +16,7 @@ import { useToolbarState } from '../../../components/toolbar';
 import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
 import { ViewSizeControls } from '../../../components/topbar/view-size-controls';
+import type { PresetOption } from '../../../components/topbar/view-size-controls';
 import { PreviewContext } from '../../../contexts/preview';
 import { useClampedState } from '../../../hooks/use-clamped-state';
 import { cn } from '../../../utils';
@@ -70,6 +71,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
     minHeight,
     maxHeight,
   );
+  const [currentPreset, setCurrentPreset] = useState<PresetOption | null>(null);
 
   const handleSaveViewSize = useDebouncedCallback(() => {
     const params = new URLSearchParams(searchParams);
@@ -79,7 +81,6 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   }, 300);
 
   const { toggled: toolbarToggled } = useToolbarState();
-  console.log(renderedDocumentMetadata?.markup)
   return (
     <>
       <Topbar documentTitle={documentTitle}>
@@ -98,6 +99,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
           }}
           viewHeight={height}
           viewWidth={width}
+          onPresetChange={setCurrentPreset}
         />
         <ActiveViewToggleGroup
           activeView={activeView}
@@ -160,6 +162,12 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
                   }
                 }}
                 width={width}
+                preset={currentPreset ? {
+                  name: currentPreset.name,
+                  width: currentPreset.dimensions.width,
+                  height: currentPreset.dimensions.height
+                } : undefined}
+                isPaginationEnabled={!!currentPreset}
               >
                 <iframe
                   className=" rounded-lg bg-white [color-scheme:auto]"

@@ -15,6 +15,7 @@ interface ViewSizeControlsProps {
   setViewWidth: (width: number) => void;
   viewHeight: number;
   setViewHeight: (height: number) => void;
+  onPresetChange?: (preset: PresetOption | null) => void;
 }
 
 interface DimensionInputProps {
@@ -28,7 +29,7 @@ interface DimensionInputProps {
   hasBorder?: boolean;
 }
 
-interface PresetOption {
+export interface PresetOption {
   name: string;
   dimensions: ViewDimensions;
 }
@@ -137,15 +138,39 @@ export const ViewSizeControls = ({
   viewHeight,
   setViewWidth,
   setViewHeight,
+  onPresetChange,
 }: ViewSizeControlsProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [activeInput, setActiveInput] = React.useState<
     'width' | 'height' | null
   >(null);
+  const [activePreset, setActivePreset] = React.useState<PresetOption | null>(null);
 
   const handlePresetSelect = (dimensions: ViewDimensions) => {
+    const preset = VIEW_PRESETS.find(p => 
+      p.dimensions.width === dimensions.width && 
+      p.dimensions.height === dimensions.height
+    );
+    
     setViewWidth(dimensions.width);
     setViewHeight(dimensions.height);
+    setActivePreset(preset || null);
+    onPresetChange?.(preset || null);
+  };
+
+  const handleManualSizeChange = (newWidth?: number, newHeight?: number) => {
+    if (newWidth !== undefined) setViewWidth(newWidth);
+    if (newHeight !== undefined) setViewHeight(newHeight);
+    
+    const matchesPreset = VIEW_PRESETS.find(p => 
+      p.dimensions.width === (newWidth ?? viewWidth) && 
+      p.dimensions.height === (newHeight ?? viewHeight)
+    );
+    
+    if (!matchesPreset && activePreset) {
+      setActivePreset(null);
+      onPresetChange?.(null);
+    }
   };
 
   const handleBlur = () => {
@@ -176,7 +201,7 @@ export const ViewSizeControls = ({
           </svg>
         }
         value={viewWidth}
-        onChange={setViewWidth}
+        onChange={(width) => handleManualSizeChange(width, undefined)}
         isActive={activeInput === 'width'}
         setIsActive={(active) => setActiveInput(active ? 'width' : null)}
         onBlur={handleBlur}
@@ -205,7 +230,7 @@ export const ViewSizeControls = ({
           </svg>
         }
         value={viewHeight}
-        onChange={setViewHeight}
+        onChange={(height) => handleManualSizeChange(undefined, height)}
         isActive={activeInput === 'height'}
         setIsActive={(active) => setActiveInput(active ? 'height' : null)}
         onBlur={handleBlur}

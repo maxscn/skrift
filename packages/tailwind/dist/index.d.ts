@@ -1,7 +1,7 @@
 import { Config } from '../dist/tailwindcss';
 import * as React_2 from 'react';
 
-export declare interface EmailElementProps {
+export declare interface DocumentElementProps {
     children?: React_2.ReactNode;
     className?: string;
     style?: React_2.CSSProperties;

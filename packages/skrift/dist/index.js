@@ -10,10 +10,10 @@ import path3 from "node:path";
 import logSymbols2 from "log-symbols";
 import ora from "ora";
 
-// src/utils/get-emails-directory-metadata.ts
+// src/utils/get-documents-directory-metadata.ts
 import fs from "node:fs";
 import path from "node:path";
-var isFileAnEmail = async (fullPath) => {
+var isFileAnDocument = async (fullPath) => {
   let fileHandle;
   try {
     fileHandle = await fs.promises.open(fullPath, "r");
@@ -40,9 +40,9 @@ var isFileAnEmail = async (fullPath) => {
   );
   return hasES6DefaultExport || hasCommonJSExport || hasNamedExport;
 };
-var mergeDirectoriesWithSubDirectories = (emailsDirectoryMetadata) => {
-  let currentResultingMergedDirectory = emailsDirectoryMetadata;
-  while (currentResultingMergedDirectory.emailFilenames.length === 0 && currentResultingMergedDirectory.subDirectories.length === 1) {
+var mergeDirectoriesWithSubDirectories = (documentsDirectoryMetadata) => {
+  let currentResultingMergedDirectory = documentsDirectoryMetadata;
+  while (currentResultingMergedDirectory.documentFilenames.length === 0 && currentResultingMergedDirectory.subDirectories.length === 1) {
     const onlySubDirectory = currentResultingMergedDirectory.subDirectories[0];
     currentResultingMergedDirectory = {
       ...onlySubDirectory,
@@ -54,17 +54,17 @@ var mergeDirectoriesWithSubDirectories = (emailsDirectoryMetadata) => {
   }
   return currentResultingMergedDirectory;
 };
-var getEmailsDirectoryMetadata = async (absolutePathToEmailsDirectory, keepFileExtensions = false, isSubDirectory = false, baseDirectoryPath = absolutePathToEmailsDirectory) => {
-  if (!fs.existsSync(absolutePathToEmailsDirectory)) return;
-  const dirents = await fs.promises.readdir(absolutePathToEmailsDirectory, {
+var getDocumentsDirectoryMetadata = async (absolutePathToDocumentsDirectory, keepFileExtensions = false, isSubDirectory = false, baseDirectoryPath = absolutePathToDocumentsDirectory) => {
+  if (!fs.existsSync(absolutePathToDocumentsDirectory)) return;
+  const dirents = await fs.promises.readdir(absolutePathToDocumentsDirectory, {
     withFileTypes: true
   });
-  const isEmailPredicates = await Promise.all(
+  const isDocumentPredicates = await Promise.all(
     dirents.map(
-      (dirent) => isFileAnEmail(path.join(absolutePathToEmailsDirectory, dirent.name))
+      (dirent) => isFileAnDocument(path.join(absolutePathToDocumentsDirectory, dirent.name))
     )
   );
-  const emailFilenames = dirents.filter((_, i) => isEmailPredicates[i]).map(
+  const documentFilenames = dirents.filter((_, i) => isDocumentPredicates[i]).map(
     (dirent) => keepFileExtensions ? dirent.name : dirent.name.replace(path.extname(dirent.name), "")
   );
   const subDirectories = await Promise.all(
@@ -72,10 +72,10 @@ var getEmailsDirectoryMetadata = async (absolutePathToEmailsDirectory, keepFileE
       (dirent) => dirent.isDirectory() && !dirent.name.startsWith("_") && dirent.name !== "static"
     ).map((dirent) => {
       const direntAbsolutePath = path.join(
-        absolutePathToEmailsDirectory,
+        absolutePathToDocumentsDirectory,
         dirent.name
       );
-      return getEmailsDirectoryMetadata(
+      return getDocumentsDirectoryMetadata(
         direntAbsolutePath,
         keepFileExtensions,
         true,
@@ -83,17 +83,17 @@ var getEmailsDirectoryMetadata = async (absolutePathToEmailsDirectory, keepFileE
       );
     })
   );
-  const emailsMetadata = {
-    absolutePath: absolutePathToEmailsDirectory,
+  const documentsMetadata = {
+    absolutePath: absolutePathToDocumentsDirectory,
     relativePath: path.relative(
       baseDirectoryPath,
-      absolutePathToEmailsDirectory
+      absolutePathToDocumentsDirectory
     ),
-    directoryName: absolutePathToEmailsDirectory.split(path.sep).pop(),
-    emailFilenames,
+    directoryName: absolutePathToDocumentsDirectory.split(path.sep).pop(),
+    documentFilenames,
     subDirectories
   };
-  return isSubDirectory ? mergeDirectoriesWithSubDirectories(emailsMetadata) : emailsMetadata;
+  return isSubDirectory ? mergeDirectoriesWithSubDirectories(documentsMetadata) : documentsMetadata;
 };
 
 // src/utils/get-preview-server-location.ts
@@ -107,7 +107,7 @@ import prompts from "prompts";
 var package_default = {
   name: "skrift",
   version: "0.0.1",
-  description: "A live preview of your pdfs right in your browser.",
+  description: "A live preview of your documents right in your browser.",
   bin: {
     skrift: "./dist/index.js"
   },
@@ -281,20 +281,20 @@ var npmInstall = async (builtPreviewAppPath, packageManager) => {
     });
   });
 };
-var setNextEnvironmentVariablesForBuild = async (emailsDirRelativePath, builtPreviewAppPath) => {
+var setNextEnvironmentVariablesForBuild = async (documentsDirRelativePath, builtPreviewAppPath) => {
   const nextConfigContents = `
 const path = require('path');
-const emailsDirRelativePath = path.normalize('${emailsDirRelativePath}');
+const documentsDirRelativePath = path.normalize('${documentsDirRelativePath}');
 const userProjectLocation = '${process.cwd()}';
 /** @type {import('next').NextConfig} */
 module.exports = {
   env: {
     NEXT_PUBLIC_IS_BUILDING: 'true',
-    EMAILS_DIR_RELATIVE_PATH: emailsDirRelativePath,
-    EMAILS_DIR_ABSOLUTE_PATH: path.resolve(userProjectLocation, emailsDirRelativePath),
+    DOCUMENTS_DIR_RELATIVE_PATH: documentsDirRelativePath,
+    DOCUMENTS_DIR_ABSOLUTE_PATH: path.resolve(userProjectLocation, documentsDirRelativePath),
     USER_PROJECT_LOCATION: userProjectLocation
   },
-  // this is needed so that the code for building emails works properly
+  // this is needed so that the code for building documents works properly
   webpack: (
     /** @type {import('webpack').Configuration & { externals: string[] }} */
     config,
@@ -322,32 +322,32 @@ module.exports = {
     "utf8"
   );
 };
-var getEmailSlugsFromEmailDirectory = (emailDirectory, emailsDirectoryAbsolutePath) => {
-  const directoryPathRelativeToEmailsDirectory = emailDirectory.absolutePath.replace(emailsDirectoryAbsolutePath, "").trim();
+var getDocumentSlugsFromDocumentDirectory = (documentDirectory, documentsDirectoryAbsolutePath) => {
+  const directoryPathRelativeToDocumentsDirectory = documentDirectory.absolutePath.replace(documentsDirectoryAbsolutePath, "").trim();
   const slugs = [];
-  emailDirectory.emailFilenames.forEach(
+  documentDirectory.documentFilenames.forEach(
     (filename2) => slugs.push(
-      path3.join(directoryPathRelativeToEmailsDirectory, filename2).split(path3.sep).filter((segment) => segment.length > 0)
+      path3.join(directoryPathRelativeToDocumentsDirectory, filename2).split(path3.sep).filter((segment) => segment.length > 0)
     )
   );
-  emailDirectory.subDirectories.forEach((directory) => {
+  documentDirectory.subDirectories.forEach((directory) => {
     slugs.push(
-      ...getEmailSlugsFromEmailDirectory(
+      ...getDocumentSlugsFromDocumentDirectory(
         directory,
-        emailsDirectoryAbsolutePath
+        documentsDirectoryAbsolutePath
       )
     );
   });
   return slugs;
 };
-var forceSSGForEmailPreviews = async (emailsDirPath, builtPreviewAppPath) => {
-  const emailDirectoryMetadata = (
+var forceSSGForDocumentPreviews = async (documentsDirPath, builtPreviewAppPath) => {
+  const documentDirectoryMetadata = (
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await getEmailsDirectoryMetadata(emailsDirPath)
+    await getDocumentsDirectoryMetadata(documentsDirPath)
   );
-  const parameters = getEmailSlugsFromEmailDirectory(
-    emailDirectoryMetadata,
-    emailsDirPath
+  const parameters = getDocumentSlugsFromDocumentDirectory(
+    documentDirectoryMetadata,
+    documentsDirPath
   ).map((slug) => ({ slug }));
   const removeForceDynamic = async (filePath) => {
     const contents = await fs2.promises.readFile(filePath, "utf8");
@@ -394,7 +394,7 @@ var updatePackageJson = async (builtPreviewAppPath) => {
   );
 };
 var build = async ({
-  dir: emailsDirRelativePath,
+  dir: documentsDirRelativePath,
   packageManager
 }) => {
   try {
@@ -404,12 +404,12 @@ var build = async ({
       prefixText: "  "
     }).start();
     registerSpinnerAutostopping(spinner);
-    spinner.text = `Checking if ${emailsDirRelativePath} folder exists`;
-    if (!fs2.existsSync(emailsDirRelativePath)) {
+    spinner.text = `Checking if ${documentsDirRelativePath} folder exists`;
+    if (!fs2.existsSync(documentsDirRelativePath)) {
       process.exit(1);
     }
-    const emailsDirPath = path3.join(process.cwd(), emailsDirRelativePath);
-    const staticPath = path3.join(emailsDirPath, "static");
+    const documentsDirPath = path3.join(process.cwd(), documentsDirRelativePath);
+    const staticPath = path3.join(documentsDirPath, "static");
     const builtPreviewAppPath = path3.join(process.cwd(), ".skrift");
     if (fs2.existsSync(builtPreviewAppPath)) {
       spinner.text = "Deleting pre-existing `.skrift` folder";
@@ -434,11 +434,11 @@ var build = async ({
     }
     spinner.text = "Setting Next environment variables for preview app to work properly";
     await setNextEnvironmentVariablesForBuild(
-      emailsDirRelativePath,
+      documentsDirRelativePath,
       builtPreviewAppPath
     );
-    spinner.text = "Setting server side generation for the email preview pages";
-    await forceSSGForEmailPreviews(emailsDirPath, builtPreviewAppPath);
+    spinner.text = "Setting server side generation for the document preview pages";
+    await forceSSGForDocumentPreviews(documentsDirPath, builtPreviewAppPath);
     spinner.text = "Updating package.json's build and start scripts";
     await updatePackageJson(builtPreviewAppPath);
     spinner.text = "Installing dependencies on `.skrift`";
@@ -607,8 +607,8 @@ var createDependencyGraph = async (directory) => {
           /*
                       path.resolve resolves paths differently from what imports on javascript do.
           
-                      So if we wouldn't do this, for an email at "/path/to/email.tsx" with a dependency path of "./other-email" 
-                      would end up going into /path/to/email.tsx/other-email instead of /path/to/other-email which is the
+                      So if we wouldn't do this, for an document at "/path/to/document.tsx" with a dependency path of "./other-document" 
+                      would end up going into /path/to/document.tsx/other-document instead of /path/to/other-document which is the
                       one the import is meant to go to
                     */
           path5.dirname(filePath),
@@ -769,7 +769,7 @@ var createDependencyGraph = async (directory) => {
 };
 
 // src/utils/preview/hot-reloading/setup-hot-reloading.ts
-var setupHotreloading = async (devServer2, emailDirRelativePath) => {
+var setupHotreloading = async (devServer2, documentDirRelativePath) => {
   let clients = [];
   const io = new SocketServer(devServer2);
   io.on("connection", (client) => {
@@ -785,28 +785,28 @@ var setupHotreloading = async (devServer2, emailDirRelativePath) => {
         "reload",
         changes.filter(
           (change) => (
-            // Ensures only changes inside the emails directory are emitted
-            path6.resolve(absolutePathToEmailsDirectory, change.filename).startsWith(absolutePathToEmailsDirectory)
+            // Ensures only changes inside the documents directory are emitted
+            path6.resolve(absolutePathToDocumentsDirectory, change.filename).startsWith(absolutePathToDocumentsDirectory)
           )
         )
       );
     });
     changes = [];
   }, 150);
-  const absolutePathToEmailsDirectory = path6.resolve(
+  const absolutePathToDocumentsDirectory = path6.resolve(
     process.cwd(),
-    emailDirRelativePath
+    documentDirRelativePath
   );
-  const [dependencyGraph, updateDependencyGraph, { resolveDependentsOf }] = await createDependencyGraph(absolutePathToEmailsDirectory);
+  const [dependencyGraph, updateDependencyGraph, { resolveDependentsOf }] = await createDependencyGraph(absolutePathToDocumentsDirectory);
   const watcher = watch("", {
     ignoreInitial: true,
-    cwd: absolutePathToEmailsDirectory
+    cwd: absolutePathToDocumentsDirectory
   });
-  const getFilesOutsideEmailsDirectory = () => Object.keys(dependencyGraph).filter(
-    (p) => path6.relative(absolutePathToEmailsDirectory, p).startsWith("..")
+  const getFilesOutsideDocumentsDirectory = () => Object.keys(dependencyGraph).filter(
+    (p) => path6.relative(absolutePathToDocumentsDirectory, p).startsWith("..")
   );
-  let filesOutsideEmailsDirectory = getFilesOutsideEmailsDirectory();
-  for (const p of filesOutsideEmailsDirectory) {
+  let filesOutsideDocumentsDirectory = getFilesOutsideDocumentsDirectory();
+  for (const p of filesOutsideDocumentsDirectory) {
     watcher.add(p);
   }
   const exit = async () => {
@@ -820,22 +820,22 @@ var setupHotreloading = async (devServer2, emailDirRelativePath) => {
       return;
     }
     const pathToChangeTarget = path6.resolve(
-      absolutePathToEmailsDirectory,
+      absolutePathToDocumentsDirectory,
       relativePathToChangeTarget
     );
     await updateDependencyGraph(event, pathToChangeTarget);
-    const newFilesOutsideEmailsDirectory = getFilesOutsideEmailsDirectory();
-    for (const p of filesOutsideEmailsDirectory) {
-      if (!newFilesOutsideEmailsDirectory.includes(p)) {
+    const newFilesOutsideDocumentsDirectory = getFilesOutsideDocumentsDirectory();
+    for (const p of filesOutsideDocumentsDirectory) {
+      if (!newFilesOutsideDocumentsDirectory.includes(p)) {
         watcher.unwatch(p);
       }
     }
-    for (const p of newFilesOutsideEmailsDirectory) {
-      if (!filesOutsideEmailsDirectory.includes(p)) {
+    for (const p of newFilesOutsideDocumentsDirectory) {
+      if (!filesOutsideDocumentsDirectory.includes(p)) {
         watcher.add(p);
       }
     }
-    filesOutsideEmailsDirectory = newFilesOutsideEmailsDirectory;
+    filesOutsideDocumentsDirectory = newFilesOutsideDocumentsDirectory;
     changes.push({
       event,
       filename: relativePathToChangeTarget
@@ -843,7 +843,7 @@ var setupHotreloading = async (devServer2, emailDirRelativePath) => {
     for (const dependentPath of resolveDependentsOf(pathToChangeTarget)) {
       changes.push({
         event: "change",
-        filename: path6.relative(absolutePathToEmailsDirectory, dependentPath)
+        filename: path6.relative(absolutePathToDocumentsDirectory, dependentPath)
       });
     }
     reload();
@@ -862,10 +862,10 @@ import ora2 from "ora";
 
 // src/utils/preview/get-env-variables-for-preview-app.ts
 import path7 from "node:path";
-var getEnvVariablesForPreviewApp = (relativePathToEmailsDirectory, cwd) => {
+var getEnvVariablesForPreviewApp = (relativePathToDocumentsDirectory, cwd) => {
   return {
-    EMAILS_DIR_RELATIVE_PATH: relativePathToEmailsDirectory,
-    EMAILS_DIR_ABSOLUTE_PATH: path7.resolve(cwd, relativePathToEmailsDirectory),
+    DOCUMENTS_DIR_RELATIVE_PATH: relativePathToDocumentsDirectory,
+    DOCUMENTS_DIR_ABSOLUTE_PATH: path7.resolve(cwd, relativePathToDocumentsDirectory),
     USER_PROJECT_LOCATION: cwd
   };
 };
@@ -923,7 +923,7 @@ var safeAsyncServerListen = (server, port) => {
     });
   });
 };
-var startDevServer = async (emailsDirRelativePath, staticBaseDirRelativePath, port) => {
+var startDevServer = async (documentsDirRelativePath, staticBaseDirRelativePath, port) => {
   const [majorNodeVersion] = process.versions.node.split(".");
   if (majorNodeVersion && Number.parseInt(majorNodeVersion) < 18) {
     console.error(
@@ -973,7 +973,7 @@ var startDevServer = async (emailsDirRelativePath, staticBaseDirRelativePath, po
       ` ${logSymbols3.warning} Port ${port} is already in use, trying ${nextPortToTry}`
     );
     return startDevServer(
-      emailsDirRelativePath,
+      documentsDirRelativePath,
       staticBaseDirRelativePath,
       nextPortToTry
     );
@@ -999,7 +999,7 @@ var startDevServer = async (emailsDirRelativePath, staticBaseDirRelativePath, po
     ...process.env,
     ...getEnvVariablesForPreviewApp(
       // If we don't do normalization here, stuff like https://github.com/maxscn/skrift/issues/1354 happens.
-      path9.normalize(emailsDirRelativePath),
+      path9.normalize(documentsDirRelativePath),
       process.cwd()
     )
   };
@@ -1126,19 +1126,19 @@ var tree = async (dirPath, depth) => {
 };
 
 // src/commands/dev.ts
-var dev = async ({ dir: emailsDirRelativePath, port }) => {
+var dev = async ({ dir: documentsDirRelativePath, port }) => {
   try {
-    if (!fs6.existsSync(emailsDirRelativePath)) {
-      console.error(`Missing ${emailsDirRelativePath} folder`);
+    if (!fs6.existsSync(documentsDirRelativePath)) {
+      console.error(`Missing ${documentsDirRelativePath} folder`);
       process.exit(1);
     }
     const devServer2 = await startDevServer(
-      emailsDirRelativePath,
-      emailsDirRelativePath,
-      // defaults to ./emails/static for the static files that are served to the preview
+      documentsDirRelativePath,
+      documentsDirRelativePath,
+      // defaults to ./documents/static for the static files that are served to the preview
       Number.parseInt(port)
     );
-    await setupHotreloading(devServer2, emailsDirRelativePath);
+    await setupHotreloading(devServer2, documentsDirRelativePath);
   } catch (error) {
     console.log(error);
     process.exit(1);
@@ -1166,20 +1166,20 @@ function escapeStringForRegex(string) {
 }
 
 // src/utils/esbuild/renderring-utilities-exporter.ts
-var renderingUtilitiesExporter = (emailTemplates) => ({
+var renderingUtilitiesExporter = (documentTemplates) => ({
   name: "rendering-utilities-exporter",
   setup: (b) => {
     b.onLoad(
       {
         filter: new RegExp(
-          emailTemplates.map((emailPath) => escapeStringForRegex(emailPath)).join("|")
+          documentTemplates.map((documentPath) => escapeStringForRegex(documentPath)).join("|")
         )
       },
       async ({ path: pathToFile }) => {
         return {
           contents: `${await fs7.readFile(pathToFile, "utf8")};
           export { render } from 'skrift-module-that-will-export-render'
-          export { createElement as reactEmailCreateReactElement } from 'react';
+          export { createElement as reactDocumentCreateReactElement } from 'react';
         `,
           loader: path11.extname(pathToFile).slice(1)
         };
@@ -1200,7 +1200,7 @@ var renderingUtilitiesExporter = (emailTemplates) => ({
         }
         result = await b.resolve("@skrift/components", options);
         if (result.errors.length > 0 && result.errors[0]) {
-          result.errors[0].text = "Failed trying to import `render` from either `@skrift/render` or `@skrift/components` to be able to render your email template.\n Maybe you don't have either of them installed?";
+          result.errors[0].text = "Failed trying to import `render` from either `@skrift/render` or `@skrift/components` to be able to render your document template.\n Maybe you don't have either of them installed?";
         }
         return result;
       }
@@ -1209,41 +1209,41 @@ var renderingUtilitiesExporter = (emailTemplates) => ({
 });
 
 // src/commands/export.ts
-var getEmailTemplatesFromDirectory = (emailDirectory) => {
+var getDocumentTemplatesFromDirectory = (documentDirectory) => {
   const templatePaths = [];
-  emailDirectory.emailFilenames.forEach(
-    (filename2) => templatePaths.push(path12.join(emailDirectory.absolutePath, filename2))
+  documentDirectory.documentFilenames.forEach(
+    (filename2) => templatePaths.push(path12.join(documentDirectory.absolutePath, filename2))
   );
-  emailDirectory.subDirectories.forEach((directory) => {
-    templatePaths.push(...getEmailTemplatesFromDirectory(directory));
+  documentDirectory.subDirectories.forEach((directory) => {
+    templatePaths.push(...getDocumentTemplatesFromDirectory(directory));
   });
   return templatePaths;
 };
 var filename = url3.fileURLToPath(import.meta.url);
 var require2 = createRequire(filename);
-var exportTemplates = async (pathToWhereEmailMarkupShouldBeDumped, emailsDirectoryPath, options) => {
-  if (fs8.existsSync(pathToWhereEmailMarkupShouldBeDumped)) {
-    fs8.rmSync(pathToWhereEmailMarkupShouldBeDumped, { recursive: true });
+var exportTemplates = async (pathToWhereDocumentMarkupShouldBeDumped, documentsDirectoryPath, options) => {
+  if (fs8.existsSync(pathToWhereDocumentMarkupShouldBeDumped)) {
+    fs8.rmSync(pathToWhereDocumentMarkupShouldBeDumped, { recursive: true });
   }
   let spinner;
   if (!options.silent) {
     spinner = ora3("Preparing files...\n").start();
     registerSpinnerAutostopping(spinner);
   }
-  const emailsDirectoryMetadata = await getEmailsDirectoryMetadata(
-    path12.resolve(process.cwd(), emailsDirectoryPath),
+  const documentsDirectoryMetadata = await getDocumentsDirectoryMetadata(
+    path12.resolve(process.cwd(), documentsDirectoryPath),
     true
   );
-  if (typeof emailsDirectoryMetadata === "undefined") {
+  if (typeof documentsDirectoryMetadata === "undefined") {
     if (spinner) {
       spinner.stopAndPersist({
         symbol: logSymbols4.error,
-        text: `Could not find the directory at ${emailsDirectoryPath}`
+        text: `Could not find the directory at ${documentsDirectoryPath}`
       });
     }
     return;
   }
-  const allTemplates = getEmailTemplatesFromDirectory(emailsDirectoryMetadata);
+  const allTemplates = getDocumentTemplatesFromDirectory(documentsDirectoryMetadata);
   try {
     await build2({
       bundle: true,
@@ -1253,7 +1253,7 @@ var exportTemplates = async (pathToWhereEmailMarkupShouldBeDumped, emailsDirecto
       loader: { ".js": "jsx" },
       logLevel: "silent",
       outExtension: { ".js": ".cjs" },
-      outdir: pathToWhereEmailMarkupShouldBeDumped,
+      outdir: pathToWhereDocumentMarkupShouldBeDumped,
       platform: "node",
       plugins: [renderingUtilitiesExporter(allTemplates)],
       write: true
@@ -1262,7 +1262,7 @@ var exportTemplates = async (pathToWhereEmailMarkupShouldBeDumped, emailsDirecto
     if (spinner) {
       spinner.stopAndPersist({
         symbol: logSymbols4.error,
-        text: "Failed to build emails"
+        text: "Failed to build documents"
       });
     }
     const buildFailure = exception;
@@ -1274,7 +1274,7 @@ ${buildFailure.message}`);
     spinner.succeed();
   }
   const allBuiltTemplates = glob.sync(
-    normalize(`${pathToWhereEmailMarkupShouldBeDumped}/**/*.cjs`),
+    normalize(`${pathToWhereDocumentMarkupShouldBeDumped}/**/*.cjs`),
     {
       absolute: true
     }
@@ -1286,9 +1286,9 @@ ${buildFailure.message}`);
         spinner.render();
       }
       delete require2.cache[template];
-      const emailModule = require2(template);
-      const rendered = await emailModule.render(
-        emailModule.reactEmailCreateReactElement(emailModule.default, {}),
+      const documentModule = require2(template);
+      const rendered = await documentModule.render(
+        documentModule.reactDocumentCreateReactElement(documentModule.default, {}),
         options
       );
       const htmlPath = template.replace(
@@ -1313,10 +1313,10 @@ ${buildFailure.message}`);
     spinner.text = "Copying static files";
     spinner.render();
   }
-  const staticDirectoryPath = path12.join(emailsDirectoryPath, "static");
+  const staticDirectoryPath = path12.join(documentsDirectoryPath, "static");
   if (fs8.existsSync(staticDirectoryPath)) {
     const pathToDumpStaticFilesInto = path12.join(
-      pathToWhereEmailMarkupShouldBeDumped,
+      pathToWhereDocumentMarkupShouldBeDumped,
       "static"
     );
     if (fs8.existsSync(pathToDumpStaticFilesInto))
@@ -1334,18 +1334,18 @@ ${buildFailure.message}`);
         });
       }
       console.error(
-        `Something went wrong while copying the file to ${pathToWhereEmailMarkupShouldBeDumped}/static, ${exception}`
+        `Something went wrong while copying the file to ${pathToWhereDocumentMarkupShouldBeDumped}/static, ${exception}`
       );
       process.exit(1);
     }
   }
   if (spinner && !options.silent) {
     spinner.succeed();
-    const fileTree = await tree(pathToWhereEmailMarkupShouldBeDumped, 4);
+    const fileTree = await tree(pathToWhereDocumentMarkupShouldBeDumped, 4);
     console.log(fileTree);
     spinner.stopAndPersist({
       symbol: logSymbols4.success,
-      text: "Successfully exported emails"
+      text: "Successfully exported documents"
     });
   }
 };
@@ -1364,7 +1364,7 @@ var start = async () => {
     );
     if (!fs9.existsSync(builtPreviewPath)) {
       console.error(
-        "Could not find .skrift, maybe you haven't ran email build?"
+        "Could not find .skrift, maybe you haven't ran document build?"
       );
       process.exit(1);
     }
@@ -1386,15 +1386,15 @@ var start = async () => {
 
 // src/index.ts
 var PACKAGE_NAME = "reactskrift";
-program.name(PACKAGE_NAME).description("A live preview of your emails right in your browser").version(package_default.version);
-program.command("dev").description("Starts the preview pdf development app").option("-d, --dir <path>", "Directory with your pdf templates", "./pdfs").option("-p --port <port>", "Port to run dev server on", "3000").action(dev);
-program.command("build").description("Copies the preview app for onto .skrift and builds it").option("-d, --dir <path>", "Directory with your skrift pdf templates", "./pdfs").option(
+program.name(PACKAGE_NAME).description("A live preview of your documents right in your browser").version(package_default.version);
+program.command("dev").description("Starts the preview pdf development app").option("-d, --dir <path>", "Directory with your pdf templates", "./documents").option("-p --port <port>", "Port to run dev server on", "3000").action(dev);
+program.command("build").description("Copies the preview app for onto .skrift and builds it").option("-d, --dir <path>", "Directory with your skrift pdf templates", "./documents").option(
   "-p --packageManager <name>",
   "Package name to use on installation on `.skrift`",
   "npm"
 ).action(build);
 program.command("start").description('Runs the built preview app that is inside of ".skrift"').action(start);
-program.command("export").description("Build the templates to the `out` directory").option("--outDir <path>", "Output directory", "out").option("-p, --pretty", "Pretty print the output", false).option("-t, --plainText", "Set output format as plain text", false).option("-d, --dir <path>", "Directory with your email templates", "./pdfs").option(
+program.command("export").description("Build the templates to the `out` directory").option("--outDir <path>", "Output directory", "out").option("-p, --pretty", "Pretty print the output", false).option("-t, --plainText", "Set output format as plain text", false).option("-d, --dir <path>", "Directory with your document templates", "./documents").option(
   "-s, --silent",
   "To, or not to show a spinner with process information",
   false
