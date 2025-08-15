@@ -23,7 +23,7 @@ export const RegularPDF = ({
       </div>
       <Unbreakable>
 
-        <div className="bg-red-500 w-full mt-4 mb-4" style={{ height: 600 }}>
+        <div className="bg-red-500 w-full mb-4" style={{ height: 600 }}>
           <p className="text-white">This is a test paragraph inside a red box.</p>
         </div>
       </Unbreakable>
