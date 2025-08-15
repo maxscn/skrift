@@ -1,0 +1,35 @@
+<div align="center"><strong>@skrift/preview-server</strong></div>
+<div align="center">A live preview of your documents right in your browser.</div>
+<br />
+<div align="center">
+<a href="https://react.document">Website</a> 
+<span> · </span>
+<a href="https://github.com/maxscn/skrift">GitHub</a> 
+<span> · </span>
+<a href="https://react.document/discord">Discord</a>
+</div>
+
+This package is used to store the preview server, it is also published and versioned so that it can be installed when the [CLI](../skrift) is being used.
+
+## Development workflow
+
+### 1. Seed document templates
+
+```sh
+pnpm dev:seed
+```
+
+This generates a boilerplate documents directory for you to work with. These files can also be modified as you see fit since they are not included in git.
+
+### 2. Run development server
+
+```sh
+pnpm dev
+```
+
+This is somewhat equivalent to `next dev` and does not support hot reloading for document templates like the CLI does. It lets you work on the UI for the preview server mainly.
+
+### 3. Open in your browser
+
+Go to http://localhost:3000
+

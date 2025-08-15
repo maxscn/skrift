@@ -4,18 +4,16 @@ import * as React from 'react';
 import { cn } from '../../utils';
 import { IconArrowDown } from '../icons/icon-arrow-down';
 import { Tooltip } from '../tooltip';
+import { PAGE_SIZES, PageSize, ViewDimensions } from '@skrift/components';
 
-interface ViewDimensions {
-  width: number;
-  height: number;
-}
+
 
 interface ViewSizeControlsProps {
   viewWidth: number;
   setViewWidth: (width: number) => void;
   viewHeight: number;
   setViewHeight: (height: number) => void;
-  onPresetChange?: (preset: PresetOption | null) => void;
+  onPresetChange?: (preset: PageSize | undefined) => void;
 }
 
 interface DimensionInputProps {
@@ -29,24 +27,12 @@ interface DimensionInputProps {
   hasBorder?: boolean;
 }
 
-export interface PresetOption {
-  name: string;
-  dimensions: ViewDimensions;
-}
 
 interface PresetMenuItemProps {
   name: string;
   dimensions: ViewDimensions;
   onSelect: (dimensions: ViewDimensions) => void;
 }
-const PPI = 96; // Pixels per inch, commonly used for web and screen displays
-const MM_PER_INCH = 25.4; // Millimeters to inches conversion factor
-const MM_TO_PX = (mm: number) => Math.round(mm / MM_PER_INCH * PPI);
-
-export const VIEW_PRESETS: PresetOption[] = [
-  { name: 'A4', dimensions: { width: MM_TO_PX(210), height: MM_TO_PX(297) } },
-  { name: 'A5', dimensions: { width: MM_TO_PX(148), height: MM_TO_PX(210) } },
-] as const;
 
 const inputVariant = {
   active: {
@@ -144,10 +130,10 @@ export const ViewSizeControls = ({
   const [activeInput, setActiveInput] = React.useState<
     'width' | 'height' | null
   >(null);
-  const [activePreset, setActivePreset] = React.useState<PresetOption | null>(null);
+  const [activePreset, setActivePreset] = React.useState<PageSize | null>(null);
 
   const handlePresetSelect = (dimensions: ViewDimensions) => {
-    const preset = VIEW_PRESETS.find(p => 
+    const preset = PAGE_SIZES.find(p => 
       p.dimensions.width === dimensions.width && 
       p.dimensions.height === dimensions.height
     );
@@ -155,21 +141,21 @@ export const ViewSizeControls = ({
     setViewWidth(dimensions.width);
     setViewHeight(dimensions.height);
     setActivePreset(preset || null);
-    onPresetChange?.(preset || null);
+    onPresetChange?.(preset);
   };
 
   const handleManualSizeChange = (newWidth?: number, newHeight?: number) => {
     if (newWidth !== undefined) setViewWidth(newWidth);
     if (newHeight !== undefined) setViewHeight(newHeight);
     
-    const matchesPreset = VIEW_PRESETS.find(p => 
+    const matchesPreset = PAGE_SIZES.find(p => 
       p.dimensions.width === (newWidth ?? viewWidth) && 
       p.dimensions.height === (newHeight ?? viewHeight)
     );
     
     if (!matchesPreset && activePreset) {
       setActivePreset(null);
-      onPresetChange?.(null);
+      onPresetChange?.(undefined);
     }
   };
 
@@ -259,7 +245,7 @@ export const ViewSizeControls = ({
             className="flex min-w-[12rem] flex-col gap-2 rounded-md border border-slate-8 border-solid bg-black px-2 py-2 text-white"
             sideOffset={5}
           >
-            {VIEW_PRESETS.map((preset) => (
+            {PAGE_SIZES.map((preset) => (
               <PresetMenuItem
                 key={preset.name}
                 name={preset.name}

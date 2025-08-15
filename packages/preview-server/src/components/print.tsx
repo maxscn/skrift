@@ -1,19 +1,19 @@
-import * as Popover from '@radix-ui/react-popover';
 import * as React from 'react';
 import { toast } from 'sonner';
-import { Button } from './button';
-import { Text } from './text';
 
-export const Print = ({ iframe }: { iframe: React.Ref<HTMLIFrameElement> }) => {
+export const Print = ({ iframe }: { iframe: React.RefObject<HTMLIFrameElement | null> }) => {
 
   const onFormSubmit = async (e: React.FormEvent) => {
     if (typeof window === 'undefined') {
       return;
     }
     e.preventDefault();
-    console.log(iframe, iframe.current)
-    iframe.current.contentWindow.focus();
-    iframe.current.contentWindow.print();
+    if (!iframe || !iframe.current) {
+      toast.error('No iframe found to print!');
+      return;
+    }
+    iframe.current.contentWindow?.focus();
+    iframe.current.contentWindow?.print();
   };
 
 

@@ -1,31 +1,32 @@
-$ tsup-node
-CLI Building entry: src/node/index.ts
-CLI Using tsconfig: tsconfig.json
-CLI tsup v8.4.0
-CLI Using tsup config: /Users/maximilianschon/skrift/packages/render/tsup.config.ts
-CLI Building entry: src/browser/index.ts
-CLI Using tsconfig: tsconfig.json
-CLI tsup v8.4.0
-CLI Using tsup config: /Users/maximilianschon/skrift/packages/render/tsup.config.ts
-CLI Target: es6
-CJS Build start
-ESM Build start
-CLI Target: es6
-CJS Build start
-ESM Build start
-ESM dist/node/index.mjs 5.99 KB
-ESM ⚡️ Build success in 24ms
-CJS dist/node/index.js 7.73 KB
-CJS ⚡️ Build success in 25ms
-ESM dist/browser/index.mjs 5.59 KB
-ESM ⚡️ Build success in 29ms
-CJS dist/browser/index.js 7.32 KB
-CJS ⚡️ Build success in 29ms
+
+[0m[2m[35m$[0m [2m[1mtsup-node[0m
+[34mCLI[39m Building entry: src/node/index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.4.0
+[34mCLI[39m Using tsup config: /Users/maximilianschon/skrift/packages/render/tsup.config.ts
+[34mCLI[39m Building entry: src/browser/index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.4.0
+[34mCLI[39m Using tsup config: /Users/maximilianschon/skrift/packages/render/tsup.config.ts
+[34mCLI[39m Target: es6
+[34mCJS[39m Build start
+[34mESM[39m Build start
+[34mCLI[39m Target: es6
+[34mCJS[39m Build start
+[34mESM[39m Build start
+[32mCJS[39m [1mdist/node/index.js [22m[32m7.73 KB[39m
+[32mCJS[39m ⚡️ Build success in 25ms
+[32mESM[39m [1mdist/node/index.mjs [22m[32m5.99 KB[39m
+[32mESM[39m ⚡️ Build success in 25ms
+[32mCJS[39m [1mdist/browser/index.js [22m[32m7.32 KB[39m
+[32mCJS[39m ⚡️ Build success in 31ms
+[32mESM[39m [1mdist/browser/index.mjs [22m[32m5.59 KB[39m
+[32mESM[39m ⚡️ Build success in 31ms
 DTS Build start
 DTS Build start
-DTS ⚡️ Build success in 1038ms
+DTS ⚡️ Build success in 1065ms
 DTS dist/node/index.d.ts  988.00 B
 DTS dist/node/index.d.mts 988.00 B
-DTS ⚡️ Build success in 1050ms
+DTS ⚡️ Build success in 1096ms
 DTS dist/browser/index.d.ts  988.00 B
 DTS dist/browser/index.d.mts 988.00 B

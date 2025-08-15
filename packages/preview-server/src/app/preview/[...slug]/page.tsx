@@ -17,7 +17,7 @@ import { getLintingSources, loadLintingRowsFrom } from '../../../utils/linting';
 import { loadStream } from '../../../utils/load-stream';
 import { documentsDirectoryAbsolutePath, isBuilding } from '../../env';
 import Preview from './preview';
-import { Print } from '../../../components/send';
+import { Print } from '../../../components/print';
 import PrintPreview from './print-preview';
 
 export const dynamicParams = true;
