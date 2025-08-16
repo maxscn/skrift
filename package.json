@@ -23,6 +23,8 @@
   "homepage": "https://github.com/maxscn/skrift#readme",
   "packageManager": "bun@1.2.19",
   "devDependencies": {
+    "@happy-dom/global-registrator": "^18.0.1",
+    "happy-dom": "^18.0.1",
     "vitest": "^3.2.4"
   },
   "dependencies": {
