@@ -1,5 +1,11 @@
 # @skrift/components
 
+## 0.0.5
+
+### Patch Changes
+
+- ccfa5f6: Component for forcing a new page.
+
 ## 0.0.4
 
 ### Patch Changes
