@@ -146,6 +146,7 @@ export const Code: React.FC<Readonly<CodeProps>> = ({
                         "before:mr-2 before:text-slate-11 before:content-['$']":
                           language === 'bash' && tokens.length === 1,
                       })}
+                      key={"line-props"}
                     >
                       {line.map((token, key) => {
                         const tokenProps = getTokenProps({

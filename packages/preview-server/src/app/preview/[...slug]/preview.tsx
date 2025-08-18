@@ -15,18 +15,21 @@ import { Print } from '../../../components/print';
 import { useToolbarState } from '../../../components/toolbar';
 import { Tooltip } from '../../../components/tooltip';
 import { ActiveViewToggleGroup } from '../../../components/topbar/active-view-toggle-group';
-import {  ViewSizeControls } from '../../../components/topbar/view-size-controls';
+import { ViewSizeControls } from '../../../components/topbar/view-size-controls';
 import { PAGE_SIZES, PageSize } from '@skrift/components';
 import { PreviewContext } from '../../../contexts/preview';
 import { useClampedState } from '../../../hooks/use-clamped-state';
 import { cn } from '../../../utils';
 import { RenderingError } from './rendering-error';
+import PagedIframe from '../../../components/paged-iframe';
+import PrintPreview from './print-preview';
 
 interface PreviewProps extends React.ComponentProps<'div'> {
   documentTitle: string;
+  pageSize: typeof PAGE_SIZES[number]["name"]
 }
 
-const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
+const Preview = ({ documentTitle, pageSize, className, ...props }: PreviewProps) => {
   const { renderingResult, renderedDocumentMetadata, pageSize: storedPageSize } = use(PreviewContext)!;
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -90,6 +93,7 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
   const { toggled: toolbarToggled } = useToolbarState();
   return (
     <>
+        <PrintPreview documentTitle={documentTitle} ref={iframeRef} />
 
       <Topbar documentTitle={documentTitle} className="print:hidden">
         <ViewSizeControls
@@ -155,23 +159,35 @@ const Preview = ({ documentTitle, className, ...props }: PreviewProps) => {
         {hasRenderingMetadata ? (
           <>
             {activeView === 'preview' && (
-              <ResizableWrapper
-                preset={currentPreset}
-              >
-                  <MeasuredIframe
-                    className=" bg-white [color-scheme:auto]"
-                    ref={(iframe) => {
-                      iframeRef.current = iframe;
-                      if (iframe) {
-                        return makeIframeDocumentBubbleEvents(iframe);
-                      }
-                    }}
-                    minHeight={minHeight}
-                    style={{ width: `${width}px` }}
-                    srcDoc={renderedDocumentMetadata.markup} />
 
-                  
-              </ResizableWrapper>
+              <PagedIframe
+                srcDoc={renderedDocumentMetadata.markup}
+                width={currentPreset.dimensions.width}
+                height={currentPreset.dimensions.height}
+                ref={(iframe) => {
+                  if (iframe) {
+                    return makeIframeDocumentBubbleEvents(iframe);
+                  }
+                }}
+                key={pageSize + documentTitle}
+              />
+              // <ResizableWrapper
+              //   preset={currentPreset}
+              // >
+              //     <MeasuredIframe
+              //       className=" bg-white [color-scheme:auto]"
+              //       ref={(iframe) => {
+              //         iframeRef.current = iframe;
+              //         if (iframe) {
+              //           return makeIframeDocumentBubbleEvents(iframe);
+              //         }
+              //       }}
+              //       minHeight={minHeight}
+              //       style={{ width: `${width}px` }}
+              //       srcDoc={renderedDocumentMetadata.markup} />
+
+
+              // </ResizableWrapper>
             )}
 
             {activeView === 'source' && (

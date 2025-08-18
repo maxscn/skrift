@@ -32,7 +32,9 @@ export const getDocumentComponent = async (
   | { error: ErrorObject }
 > => {
   let outputFiles: OutputFile[];
+  console.log("constructing data")
   try {
+    console.log("starting esbuild")
     const buildData = await build({
       bundle: true,
       entryPoints: [documentPath],
@@ -50,6 +52,7 @@ export const getDocumentComponent = async (
       outdir: 'stdout', // just a stub for esbuild, it won't actually write to this folder
       sourcemap: 'external',
     });
+    console.log("built file")
     outputFiles = buildData.outputFiles;
   } catch (exception) {
     const buildFailure = exception as BuildFailure;
@@ -62,7 +65,7 @@ export const getDocumentComponent = async (
       },
     };
   }
-
+  console.log("got data")
   const sourceMapFile = outputFiles[0]!;
   const bundledDocumentFile = outputFiles[1]!;
   const builtDocumentCode = bundledDocumentFile.text;

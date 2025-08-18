@@ -52,23 +52,66 @@ export const parseSrcDocForUnbreakableElements = async (srcDoc: string): Promise
 };
 
 export const applyMarginToIframeSrcDoc = (srcDoc: string, marginTop: number): string => {
+  const style = `<style>
+    .skrift-unbreakable:first-of-type {
+      margin-top: ${marginTop}px !important;
+    }
+  </style>`;
+  
+  if (srcDoc.includes('</head>')) {
+    return srcDoc.replace('</head>', `${style}</head>`);
+  } else if (srcDoc.includes('<body>')) {
+    return srcDoc.replace('<body>', `<head>${style}</head><body>`);
+  } else {
+    return `<head>${style}</head>${srcDoc}`;
+  }
+};
+
+export const applyMarginsToSpecificIframeElements = (srcDoc: string, elementMargins: Map<number, number>): string => {
+  console.log('=== APPLY MARGINS TO IFRAME SRCDOC START ===');
+  console.log('Element margins to apply:', Array.from(elementMargins.entries()));
+  
+  if (elementMargins.size === 0) {
+    console.log('❌ No margins to apply');
+    return srcDoc;
+  }
+  
+  // Parse the HTML and apply inline styles directly to elements
   const parser = new DOMParser();
   const doc = parser.parseFromString(srcDoc, 'text/html');
-  const unbreakableElement = doc.querySelector('.skrift-unbreakable');
-
-  if (unbreakableElement) {
-    const currentStyle = unbreakableElement.getAttribute('style') || '';
-    const newStyle = currentStyle.replace(/margin-top:\s*[^;]+;?/g, '') + `; margin-top: ${marginTop}px !important;`;
-    unbreakableElement.setAttribute('style', newStyle);
-    return doc.documentElement.outerHTML;
+  
+  // Find all elements with skrift-unbreakable class
+  const unbreakableElements = doc.querySelectorAll('.skrift-unbreakable');
+  console.log(`Found ${unbreakableElements.length} unbreakable elements in iframe`);
+  
+  // Apply margins to specific elements by index
+  for (const [elementIndex, margin] of elementMargins.entries()) {
+    if (elementIndex < unbreakableElements.length) {
+      const element = unbreakableElements[elementIndex] as HTMLElement;
+      const existingStyle = element.getAttribute('style') || '';
+      const newStyle = existingStyle + `; margin-top: ${margin}px !important`;
+      element.setAttribute('style', newStyle);
+      console.log(`✅ Applied ${margin}px margin to element ${elementIndex}:`, {
+        tagName: element.tagName,
+        className: element.className,
+        existingStyle,
+        newStyle
+      });
+    } else {
+      console.warn(`❌ Element index ${elementIndex} out of range (only ${unbreakableElements.length} elements)`);
+    }
   }
-
-  return srcDoc;
+  
+  // Convert back to string
+  const modifiedSrcDoc = doc.documentElement.outerHTML;
+  console.log('=== APPLY MARGINS TO IFRAME SRCDOC COMPLETE ===');
+  
+  return modifiedSrcDoc;
 };
 
 export const processIframeElements = async (unbreakableElements: UnbreakableElement[]) => {
   const iframeElements = unbreakableElements.filter(item => item.isIframe && item.srcDoc);
-  let iframeElementsData: { bounds: DOMRect, existingMarginTop: number }[] = [];
+  let iframeElementsData: { bounds: DOMRect, existingMarginTop: number, iframeContainer: UnbreakableElement, elementIndex: number }[] = [];
 
   if (iframeElements.length > 0) {
     console.log('Processing iframe elements with srcDoc...');
@@ -76,7 +119,15 @@ export const processIframeElements = async (unbreakableElements: UnbreakableElem
       for (const iframeItem of iframeElements) {
         if (iframeItem.srcDoc) {
           const elementsData = await parseSrcDocForUnbreakableElements(iframeItem.srcDoc);
-          iframeElementsData.push(...elementsData);
+          
+          // Add iframe container reference and element index to each data entry
+          elementsData.forEach((data, index) => {
+            iframeElementsData.push({
+              ...data,
+              iframeContainer: iframeItem,
+              elementIndex: index
+            });
+          });
         }
       }
       console.log('Found unbreakable elements in iframes:', iframeElementsData.length);

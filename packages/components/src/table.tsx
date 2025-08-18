@@ -125,7 +125,7 @@ export const TableCell: React.FC<TableCellProps> = ({
     <Tag 
       className={`skrift-table-cell ${isHeader ? 'skrift-table-header-cell' : ''} ${className}`}
       style={{ 
-        padding: '8px',
+        padding: isHeader ? "unset" : '8px',
         border: '1px solid #e5e7eb',
         textAlign: 'left',
         ...style 

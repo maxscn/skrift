@@ -122,7 +122,7 @@ This is most likely not an issue with the preview server. Maybe there was a typo
         {/* on the build of the preview server de-opting into         */}
         {/* client-side rendering on build                            */}
         <Suspense>
-          <Preview documentTitle={path.basename(documentPath)} />
+          <Preview documentTitle={path.basename(documentPath)} pageSize={pageSize} />
 
           {/* <Toolbar
             serverLintingRows={lintingRows}
@@ -131,7 +131,6 @@ This is most likely not an issue with the preview server. Maybe there was a typo
           /> */}
         </Suspense>
       </Shell>
-      <PrintPreview documentTitle={path.basename(documentPath)} />
 
     </PreviewProvider>
   );

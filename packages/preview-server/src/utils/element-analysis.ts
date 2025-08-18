@@ -15,16 +15,17 @@ export interface TableWithHeader {
 }
 
 export const findUnbreakableElements = (children: React.ReactNode): UnbreakableElement[] => {
+  console.log('=== FIND UNBREAKABLE ELEMENTS START ===');
   const unbreakableElements: UnbreakableElement[] = [];
 
   const traverse = (node: React.ReactNode, path: number[] = []) => {
     if (!node) return;
-    console.log('Traversing node:', node);
+    
     if (React.isValidElement(node)) {
       const props = node.props as any;
 
       if (props.srcDoc) {
-        console.log('Found iframe with srcDoc');
+        console.log(`🔍 Found iframe with srcDoc at path ${path.join('-')}`);
         unbreakableElements.push({
           element: node,
           isIframe: true,
@@ -36,6 +37,12 @@ export const findUnbreakableElements = (children: React.ReactNode): UnbreakableE
 
       if (typeof props.className === 'string' &&
         props.className.includes('skrift-unbreakable')) {
+        console.log(`🔍 Found unbreakable element at path ${path.join('-')}:`, {
+          className: props.className,
+          tagName: node.type,
+          path: path,
+          pathKey: path.join('-')
+        });
         unbreakableElements.push({ element: node, path });
       }
 
@@ -56,6 +63,15 @@ export const findUnbreakableElements = (children: React.ReactNode): UnbreakableE
   };
 
   traverse(children);
+  console.log(`✅ FOUND ${unbreakableElements.length} UNBREAKABLE ELEMENTS:`, 
+    unbreakableElements.map((item, index) => ({
+      index,
+      path: item.path,
+      pathKey: item.path.join('-'),
+      isIframe: item.isIframe,
+      className: (item.element.props as any)?.className
+    }))
+  );
   return unbreakableElements;
 };
 
