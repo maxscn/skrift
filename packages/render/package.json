@@ -1,6 +1,6 @@
 {
   "name": "@skrift/render",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Transform React components into HTML document templates",
   "sideEffects": false,
   "main": "./dist/browser/index.js",

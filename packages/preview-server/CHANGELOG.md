@@ -1,5 +1,13 @@
 # @skrift/preview-server
 
+## 0.0.2
+
+### Patch Changes
+
+- 522991c: Initial release.
+- Updated dependencies [522991c]
+  - @skrift/components@0.0.1
+
 ## 4.1.1
 
 ## 4.1.0
