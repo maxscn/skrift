@@ -21,6 +21,10 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "dependencies": {
+    "@skrift/tailwind": "*",
+    "@skrift/render": "*"
+  },
   "exports": {
     ".": {
       "import": {
