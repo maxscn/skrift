@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { usePageSize } from '../dist';
+import { usePageSize } from './page';
 
 export type HeadProps = Readonly<React.ComponentPropsWithoutRef<'head'>>;
 
