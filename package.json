@@ -11,7 +11,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "turbo run build",
     "release": "turbo run build && changeset publish"
-
   },
   "repository": {
     "type": "git",
@@ -30,6 +29,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@changesets/cli": "^2.29.6",
     "turbo": "^2.5.5"
   }
 }
