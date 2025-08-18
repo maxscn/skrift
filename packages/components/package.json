@@ -1,6 +1,6 @@
 {
   "name": "@skrift/components",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,5 +24,8 @@
   },
   "exports": {
     ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
