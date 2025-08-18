@@ -9,7 +9,9 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "turbo run build"
+    "build": "turbo run build",
+    "release": "turbo run build:lib && changeset publish"
+
   },
   "repository": {
     "type": "git",
