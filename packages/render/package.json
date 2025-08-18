@@ -99,7 +99,7 @@
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0",
     "jsdom": "26.1.0",
-    "tsconfig": "workspace:*",
+    "tsconfig": "*",
     "tsup": "8.4.0",
     "typescript": "5.8.3"
   },

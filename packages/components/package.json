@@ -15,7 +15,6 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
