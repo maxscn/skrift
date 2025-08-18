@@ -1,13 +1,13 @@
 // IframeWithPagedJs.tsx
 import React, { useMemo } from "react";
-import { MeasuredIframe } from "./measured-iframe";
+import { MeasuredIframe, MeasuredIframeProps } from "./measured-iframe";
 
 type IframeWithPagedJsProps = {
   srcDoc: string;
   width?: string | number;
   height?: string | number;
   style?: React.CSSProperties;
-};
+} & MeasuredIframeProps;
 
 const pagedJsCdn = "https://unpkg.com/pagedjs@0.5.0-beta.2/dist/paged.polyfill.js";
 

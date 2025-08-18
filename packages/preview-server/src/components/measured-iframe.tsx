@@ -1,5 +1,5 @@
 "use client"
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { forwardRef, Ref, useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { cn } from '../utils';
 
@@ -8,6 +8,7 @@ export interface MeasuredIframeProps extends React.IframeHTMLAttributes<HTMLIFra
   minHeight?: number;
   maxHeight?: number;
   measurementDebounceMs?: number;
+  ref: Ref<HTMLIFrameElement>
 }
 
 export const MeasuredIframe = forwardRef<HTMLIFrameElement, MeasuredIframeProps>(

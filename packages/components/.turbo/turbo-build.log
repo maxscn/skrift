@@ -7,11 +7,11 @@
 [34mCLI[39m Target: esnext
 [34mCJS[39m Build start
 [34mESM[39m Build start
-[32mESM[39m [1mdist/index.js [22m[32m999.00 B[39m
-[32mESM[39m ⚡️ Build success in 17ms
-[32mCJS[39m [1mdist/index.cjs [22m[32m2.41 KB[39m
-[32mCJS[39m ⚡️ Build success in 18ms
+[32mCJS[39m [1mdist/index.cjs [22m[32m5.97 KB[39m
+[32mCJS[39m ⚡️ Build success in 16ms
+[32mESM[39m [1mdist/index.js [22m[32m4.32 KB[39m
+[32mESM[39m ⚡️ Build success in 16ms
 DTS Build start
-DTS ⚡️ Build success in 1172ms
-DTS dist/index.d.cts 412.00 B
-DTS dist/index.d.ts  412.00 B
+DTS ⚡️ Build success in 1188ms
+DTS dist/index.d.cts 3.36 KB
+DTS dist/index.d.ts  3.36 KB
