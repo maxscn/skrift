@@ -1,5 +1,11 @@
 # skrift
 
+## 0.0.2
+
+### Patch Changes
+
+- ab34f8a: Fix deps
+
 ## 4.1.1
 
 ### Patch Changes
@@ -352,7 +358,6 @@
   ## Why
 
   Three reasons:
-
   1. Better support of NextJS's latest versions
   2. Being ready for future React API deprecations
   3. Support for Suspense which allows for using async inside components
@@ -385,7 +390,6 @@
   ## Why
 
   Three reasons:
-
   1. Better support of NextJS's latest versions
   2. Being ready for future React API deprecations
   3. Support for Suspense which allows for using async inside components

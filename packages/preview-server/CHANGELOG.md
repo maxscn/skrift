@@ -1,5 +1,13 @@
 # @skrift/preview-server
 
+## 0.0.2
+
+### Patch Changes
+
+- ab34f8a: Fix deps
+- Updated dependencies [ab34f8a]
+  - @skrift/components@0.0.2
+
 ## 4.1.1
 
 ## 4.1.0

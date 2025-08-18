@@ -1,6 +1,6 @@
 {
   "name": "skrift",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A live preview of your documents right in your browser.",
   "bin": {
     "skrift": "./dist/index.js"
@@ -58,7 +58,7 @@
     "tsup": "8.4.0",
     "typescript": "5.8.3"
   },
-    "publishConfig": {
+  "publishConfig": {
     "access": "public"
   }
 }
