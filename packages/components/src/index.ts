@@ -5,3 +5,4 @@ export * from "./document";
 export * from "./page";
 export * from "./new-page";
 export * from "./head";
+export * from "./body";

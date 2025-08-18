@@ -21,9 +21,7 @@ export const Document: React.FC<DocumentProps> = ({
   return (
     <GlobalPageSizeContext.Provider value={pageSize}>
       <html style={{ overflow: "hidden !important", margin: 0, padding: 0 }}>
-        <body style={{ margin: 0, padding: 0, backgroundColor: "oklch(92.8% 0.006 264.531)" }}>
           {children}
-        </body>
       </html>
     </GlobalPageSizeContext.Provider>
   );
