@@ -1,5 +1,11 @@
 # @skrift/components
 
+## 0.0.7
+
+### Patch Changes
+
+- ec6bb4a: Adding a head component and breaking out css from document component, since it breaks up head.
+
 ## 0.0.6
 
 ### Patch Changes
