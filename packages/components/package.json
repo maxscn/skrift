@@ -2,6 +2,7 @@
   "name": "@skrift/components",
   "version": "0.0.2",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -22,7 +23,16 @@
     "typescript": "^5"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "publishConfig": {
     "access": "public"
