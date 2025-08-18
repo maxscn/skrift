@@ -6,7 +6,7 @@ test('checkLinks()', async () => {
   <a href="/">Root</a>
   <a href="https://skrift.com">Skrift</a>
   <a href="https://notion.so">Notion</a>
-  <a href="http://react.document">Skrift unsafe</a>
+  <a href="http://skrift.app">Skrift unsafe</a>
 </div>`;
   const stream = await checkLinks(html);
   const reader = stream.getReader();
@@ -107,7 +107,7 @@ test('checkLinks()', async () => {
           passed: false,
         },
       ],
-      link: 'http://react.document',
+      link: 'http://skrift.app',
     },
   ] satisfies LinkCheckingResult[]);
 });

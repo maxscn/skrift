@@ -1,14 +1,14 @@
-![Skrift Tailwind cover](https://react.document/static/covers/tailwind.png)
+![Skrift Tailwind cover](https://skrift.app/static/covers/tailwind.png)
 
 <div align="center"><strong>@skrift/tailwind</strong></div>
 <div align="center">A React component to wrap documents with Tailwind CSS.</div>
 <br />
 <div align="center">
-<a href="https://react.document">Website</a> 
+<a href="https://skrift.app">Website</a> 
 <span> · </span>
-<a href="https://react.document">Documentation</a> 
+<a href="https://skrift.app">Documentation</a> 
 <span> · </span>
-<a href="https://react.document">Twitter</a>
+<a href="https://skrift.app">Twitter</a>
 </div>
 
 ## Install
@@ -117,7 +117,7 @@ on that.
 
 This component was tested using the most popular document clients.
 
-| <img src="https://react.document/static/icons/gmail.svg" width="48px" height="48px" alt="Gmail logo"> | <img src="https://react.document/static/icons/apple-mail.svg" width="48px" height="48px" alt="Apple Mail"> | <img src="https://react.document/static/icons/outlook.svg" width="48px" height="48px" alt="Outlook logo"> | <img src="https://react.document/static/icons/yahoo-mail.svg" width="48px" height="48px" alt="Yahoo! Mail logo"> | <img src="https://react.document/static/icons/hey.svg" width="48px" height="48px" alt="HEY logo"> | <img src="https://react.document/static/icons/superhuman.svg" width="48px" height="48px" alt="Superhuman logo"> |
+| <img src="https://skrift.app/static/icons/gmail.svg" width="48px" height="48px" alt="Gmail logo"> | <img src="https://skrift.app/static/icons/apple-mail.svg" width="48px" height="48px" alt="Apple Mail"> | <img src="https://skrift.app/static/icons/outlook.svg" width="48px" height="48px" alt="Outlook logo"> | <img src="https://skrift.app/static/icons/yahoo-mail.svg" width="48px" height="48px" alt="Yahoo! Mail logo"> | <img src="https://skrift.app/static/icons/hey.svg" width="48px" height="48px" alt="HEY logo"> | <img src="https://skrift.app/static/icons/superhuman.svg" width="48px" height="48px" alt="Superhuman logo"> |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Gmail ✔                                                                                           | Apple Mail ✔                                                                                           | Outlook ✔                                                                                             | Yahoo! Mail ✔                                                                                                | HEY ✔                                                                                         | Superhuman ✔                                                                                                |
 

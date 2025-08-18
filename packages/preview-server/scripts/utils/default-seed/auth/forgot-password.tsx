@@ -66,6 +66,6 @@ export default function ForgotPassword({
 }
 
 ForgotPassword.PreviewProps = {
-  resetLink: 'https://react.document/reset-password/123',
+  resetLink: 'https://skrift.app/reset-password/123',
   expiryTime: '1 hour',
 } satisfies ForgotPasswordProps;

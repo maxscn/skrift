@@ -44,17 +44,17 @@ export default function FeedbackRequest({ name }: FeedbackRequestProps) {
               If you have any questions about the service or need assistance,
               please feel free to reach out to us at{' '}
               <a
-                href="mailto:support@react.document"
+                href="mailto:support@skrift.app"
                 className="text-cyan-300 underline"
               >
-                support@react.document
+                support@skrift.app
               </a>
               .
             </Text>
             <Row className="w-full">
               <Column className="w-full">
                 <Button
-                  href="https://react.document"
+                  href="https://skrift.app"
                   className="bg-cyan-300 text-[20px] font-bold text-[#404040] w-full text-center border border-solid border-cyan-900 py-[8px] rounded-[8px]"
                 >
                   Give Feedback

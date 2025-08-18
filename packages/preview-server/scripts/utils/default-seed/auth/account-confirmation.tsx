@@ -63,6 +63,6 @@ export default function AccountConfirmation({
 }
 
 AccountConfirmation.PreviewProps = {
-  confirmLink: 'https://react.document/confirm/123',
+  confirmLink: 'https://skrift.app/confirm/123',
   expiryTime: '24 hours',
 } satisfies AccountConfirmationProps;

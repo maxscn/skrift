@@ -60,18 +60,18 @@ import { Tailwind } from '.';
 //               or copy and paste this URL into your browser:{' '}
 //               <Link
 //                 className="other text-blue-600 no-underline"
-//                 href="https://react.document"
+//                 href="https://skrift.app"
 //               >
-//                 https://react.document
+//                 https://skrift.app
 //               </Link>
 //             </p>
 //             <p className="text-[14px] text-black leading-[24px]">
 //               or copy and paste this URL into your browser:{' '}
 //               <Link
 //                 className="text-blue-600 no-underline"
-//                 href="https://react.document"
+//                 href="https://skrift.app"
 //               >
-//                 https://react.document
+//                 https://skrift.app
 //               </Link>
 //             </p>
 //           </Tailwind>

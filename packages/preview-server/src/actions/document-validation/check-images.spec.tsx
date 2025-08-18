@@ -6,7 +6,7 @@ test('checkImages()', async () => {
   <img src="https://skrift.com/static/brand/skrift-icon-white.png" />,
   <img src="/static/codepen-challengers.png" alt="codepen challenges" />,
 </div>`;
-  const stream = await checkImages(html, 'https://demo.react.document');
+  const stream = await checkImages(html, 'https://demo.skrift.app');
   const reader = stream.getReader();
   while (true) {
     const { done, value } = await reader.read();

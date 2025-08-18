@@ -2,11 +2,11 @@
 <div align="center">A live preview of your documents right in your browser.</div>
 <br />
 <div align="center">
-<a href="https://react.document">Website</a> 
+<a href="https://skrift.app">Website</a> 
 <span> · </span>
 <a href="https://github.com/maxscn/skrift">GitHub</a> 
 <span> · </span>
-<a href="https://react.document/discord">Discord</a>
+<a href="https://skrift.app/discord">Discord</a>
 </div>
 
 This package is used to store the preview server, it is also published and versioned so that it can be installed when the [CLI](../skrift) is being used.

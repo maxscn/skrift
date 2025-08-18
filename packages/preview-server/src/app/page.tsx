@@ -35,7 +35,7 @@ const Home = () => {
             folder.
           </Text>
           <Button asChild className="mt-3" size="3">
-            <Link href="https://react.document/docs">Check the docs</Link>
+            <Link href="https://skrift.app/docs">Check the docs</Link>
           </Button>
         </div>
       </div>

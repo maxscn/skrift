@@ -1,14 +1,14 @@
-![Skrift cover](https://react.document/static/covers/skrift.png)
+![Skrift cover](https://skrift.app/static/covers/skrift.png)
 
 <div align="center"><strong>Skrift</strong></div>
 <div align="center">The next generation of writing documents.<br />High-quality, unstyled components for creating documents.</div>
 <br />
 <div align="center">
-<a href="https://react.document">Website</a> 
+<a href="https://skrift.app">Website</a> 
 <span> · </span>
 <a href="https://github.com/maxscn/skrift">GitHub</a> 
 <span> · </span>
-<a href="https://react.document/discord">Discord</a>
+<a href="https://skrift.app/discord">Discord</a>
 </div>
 
 ## Getting started

@@ -1,14 +1,14 @@
-![Skrift button cover](https://react.document/static/covers/render.png)
+![Skrift button cover](https://skrift.app/static/covers/render.png)
 
 <div align="center"><strong>@skrift/render</strong></div>
 <div align="center">Transform React components into HTML document templates.</div>
 <br />
 <div align="center">
-<a href="https://react.document">Website</a> 
+<a href="https://skrift.app">Website</a> 
 <span> · </span>
 <a href="https://github.com/maxscn/skrift">GitHub</a> 
 <span> · </span>
-<a href="https://react.document/discord">Discord</a>
+<a href="https://skrift.app/discord">Discord</a>
 </div>
 
 ## Install

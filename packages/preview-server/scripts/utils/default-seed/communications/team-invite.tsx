@@ -73,6 +73,6 @@ export default function TeamInvite({
 TeamInvite.PreviewProps = {
   inviterName: 'John Doe',
   teamName: 'Marketing Team',
-  inviteLink: 'https://react.document/join/team/123',
+  inviteLink: 'https://skrift.app/join/team/123',
   role: 'Editor',
 } satisfies TeamInviteProps;

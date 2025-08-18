@@ -55,10 +55,10 @@ export default function WebhooksFailed({ date, error }: WebhooksFailedProps) {
               If you have any questions or need assistance, please reach out to
               us at{' '}
               <a
-                href="mailto:support@react.document"
+                href="mailto:support@skrift.app"
                 className="text-cyan-300 underline"
               >
-                support@react.document
+                support@skrift.app
               </a>
               .
             </Text>

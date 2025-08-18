@@ -78,5 +78,5 @@ PaymentOverdue.PreviewProps = {
   customerName: 'Jane Smith',
   amount: '$99.00',
   dueDate: 'June 1st, 2024',
-  invoiceLink: 'https://react.document/invoice/123',
+  invoiceLink: 'https://skrift.app/invoice/123',
 } satisfies PaymentOverdueProps;
