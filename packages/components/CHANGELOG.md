@@ -1,5 +1,11 @@
 # @skrift/components
 
+## 0.0.6
+
+### Patch Changes
+
+- dd7551f: Fixing bug with newpage and removing overflow from body
+
 ## 0.0.5
 
 ### Patch Changes
