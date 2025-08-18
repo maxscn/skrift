@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "turbo run build",
-    "release": "turbo run build:lib && changeset publish"
+    "release": "turbo run build && changeset publish"
 
   },
   "repository": {
