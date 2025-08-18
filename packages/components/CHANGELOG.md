@@ -1,5 +1,11 @@
 # @skrift/components
 
+## 0.0.8
+
+### Patch Changes
+
+- 44143eb: Adding body component.
+
 ## 0.0.7
 
 ### Patch Changes
