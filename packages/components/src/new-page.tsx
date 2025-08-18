@@ -4,7 +4,7 @@ import React from 'react';
 
 export const NewPage: React.FC = () => {
   const unbreakableStyle: React.CSSProperties = {
-    breakAfter: 'always',
+    breakAfter: 'page',
   };
 
   return (
