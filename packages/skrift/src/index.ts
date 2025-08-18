@@ -6,7 +6,7 @@ import { exportTemplates } from './commands/export.js';
 import { start } from './commands/start.js';
 import { packageJson } from './utils/packageJson.js';
 
-const PACKAGE_NAME = 'reactskrift';
+const PACKAGE_NAME = 'skrift';
 
 program
   .name(PACKAGE_NAME)

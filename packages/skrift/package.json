@@ -47,7 +47,7 @@
     "tsconfig-paths": "4.2.0"
   },
   "devDependencies": {
-    "@skrift/components": "workspace:*",
+    "@skrift/components": "*",
     "@types/babel__core": "7.20.5",
     "@types/babel__traverse": "7.20.7",
     "@types/mime-types": "2.1.4",
@@ -57,5 +57,8 @@
     "react-dom": "19.0.0",
     "tsup": "8.4.0",
     "typescript": "5.8.3"
+  },
+    "publishConfig": {
+    "access": "public"
   }
 }
