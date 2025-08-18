@@ -1,5 +1,13 @@
 # @skrift/preview-server
 
+## 0.0.3
+
+### Patch Changes
+
+- 318aa43: Minor bump to fix npm issue.
+- Updated dependencies [318aa43]
+  - @skrift/components@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
