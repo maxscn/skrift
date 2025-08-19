@@ -105,8 +105,8 @@ import prompts from "prompts";
 
 // package.json
 var package_default = {
-  name: "skrift",
-  version: "0.0.1",
+  name: "@skrift/skrift",
+  version: "0.0.4",
   description: "A live preview of your documents right in your browser.",
   bin: {
     skrift: "./dist/index.js"
@@ -153,7 +153,7 @@ var package_default = {
     "tsconfig-paths": "4.2.0"
   },
   devDependencies: {
-    "@skrift/components": "workspace:*",
+    "@skrift/components": "*",
     "@types/babel__core": "7.20.5",
     "@types/babel__traverse": "7.20.7",
     "@types/mime-types": "2.1.4",
@@ -163,6 +163,9 @@ var package_default = {
     "react-dom": "19.0.0",
     tsup: "8.4.0",
     typescript: "5.8.3"
+  },
+  publishConfig: {
+    access: "public"
   }
 };
 
@@ -1385,7 +1388,7 @@ var start = async () => {
 };
 
 // src/index.ts
-var PACKAGE_NAME = "reactskrift";
+var PACKAGE_NAME = "skrift";
 program.name(PACKAGE_NAME).description("A live preview of your documents right in your browser").version(package_default.version);
 program.command("dev").description("Starts the preview pdf development app").option("-d, --dir <path>", "Directory with your pdf templates", "./documents").option("-p --port <port>", "Port to run dev server on", "3000").action(dev);
 program.command("build").description("Copies the preview app for onto .skrift and builds it").option("-d, --dir <path>", "Directory with your skrift pdf templates", "./documents").option(

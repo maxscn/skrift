@@ -18,7 +18,7 @@ function injectPagedJs(html: string): string {
     <script>
       window.addEventListener('DOMContentLoaded', function() {
         if (window.PagedPolyfill) {
-          window.PagedPolyfill.preview(undefined, ["--page-size", "A4"]);
+          window.PagedPolyfill.preview(undefined);
         }
       });
     </script>

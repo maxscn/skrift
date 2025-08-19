@@ -15,10 +15,8 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
-    "@skrift/components": "workspace:*",
+    "@skrift/components": "0.0.9",
     "@skrift/preview-server": "0.0.4",
-    "@skrift/render": "workspace:*",
-    "@skrift/tailwind": "workspace:*",
     "bun-types": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

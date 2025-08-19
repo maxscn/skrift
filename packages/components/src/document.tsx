@@ -20,8 +20,8 @@ export const Document: React.FC<DocumentProps> = ({
   const dimensions = PAGE_SIZES.find(p => p.name === pageSize);
   return (
     <GlobalPageSizeContext.Provider value={pageSize}>
-      <html style={{ backgroundColor: "white", margin: 0, padding: 0 }}>
-                <style>
+      <html style={{ backgroundColor: "rgb(229 231 235)", margin: 0, padding: 0 }}>
+        <style>
           {`@page {
               size: ${dimensions?.name};
               margin: 0;
@@ -58,7 +58,7 @@ export const Document: React.FC<DocumentProps> = ({
             }
             `}
         </style>
-          {children}
+        {children}
       </html>
     </GlobalPageSizeContext.Provider>
   );
