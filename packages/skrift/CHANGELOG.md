@@ -1,5 +1,11 @@
 # skrift
 
+## 0.0.5
+
+### Patch Changes
+
+- 4730a3b: Not measured iframe because pagedjs handles pagination
+
 ## 0.0.4
 
 ### Patch Changes
