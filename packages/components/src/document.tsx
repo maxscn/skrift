@@ -20,9 +20,17 @@ export const Document: React.FC<DocumentProps> = ({
   const dimensions = PAGE_SIZES.find(p => p.name === pageSize);
   return (
     <GlobalPageSizeContext.Provider value={pageSize}>
-      <html style={{ backgroundColor: "rgb(229 231 235)", margin: 0, padding: 0 }}>
+      <html style={{ margin: 0, padding: 0 }}>
         <style>
-          {`@page {
+          {
+          `
+          html {
+            background-color: rgb(229 231 235);
+          }
+          @media print {
+            background-color: white;
+          }
+          @page {
               size: ${dimensions?.name};
               margin: 0;
             }
