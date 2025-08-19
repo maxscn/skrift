@@ -1,5 +1,11 @@
 # @skrift/components
 
+## 0.0.12
+
+### Patch Changes
+
+- 62c8890: Fix color document
+
 ## 0.0.10
 
 ### Patch Changes
