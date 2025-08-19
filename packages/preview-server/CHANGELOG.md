@@ -1,5 +1,13 @@
 # @skrift/preview-server
 
+## 0.0.4
+
+### Patch Changes
+
+- 568b1c9: Printing from the correct pagedjs. Making the background white. Trying to fix an issue with margins/page size.
+- Updated dependencies [568b1c9]
+  - @skrift/components@0.0.9
+
 ## 0.0.3
 
 ### Patch Changes
