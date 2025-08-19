@@ -45,11 +45,11 @@ export const PagedIframe: React.FC<IframeWithPagedJsProps> = ({
   const htmlContent = useMemo(() => injectPagedJs(srcDoc, ), [srcDoc]);
 
   return (
-    <MeasuredIframe
+    <iframe
       srcDoc={htmlContent}
       style={{
         width,
-        height,
+        height: "auto",
         ...style,
         marginLeft: "auto",
         marginRight: "auto"
