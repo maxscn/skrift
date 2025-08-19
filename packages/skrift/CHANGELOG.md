@@ -1,5 +1,11 @@
 # skrift
 
+## 0.0.6
+
+### Patch Changes
+
+- ad8d85c: Using measured iframe, hopefully works
+
 ## 0.0.5
 
 ### Patch Changes
