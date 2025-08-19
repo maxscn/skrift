@@ -10,7 +10,7 @@ export const Body: React.FC<BodyProps> = ({
 }) => {
   return (
 
-    <body style={{ margin: 0, padding: 0, backgroundColor: "oklch(92.8% 0.006 264.531)" }}>
+    <body style={{ backgroundColor: "white", margin: 0, padding: 0 }}>
       {children}
     </body>
   );

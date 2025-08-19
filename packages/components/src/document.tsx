@@ -20,7 +20,44 @@ export const Document: React.FC<DocumentProps> = ({
   const dimensions = PAGE_SIZES.find(p => p.name === pageSize);
   return (
     <GlobalPageSizeContext.Provider value={pageSize}>
-      <html style={{ overflow: "hidden !important", margin: 0, padding: 0 }}>
+      <html style={{ backgroundColor: "white", margin: 0, padding: 0 }}>
+                <style>
+          {`@page {
+              size: ${dimensions?.name};
+              margin: 0;
+            }
+            .pagedjs_page {
+              background-color: white;
+              display: block;
+              position: relative !important;
+              page-break-after: always;
+              width: ${dimensions?.dimensions.width}px !important;
+              height: ${dimensions?.dimensions.height}px !important;
+            }
+            .pagedjs_sheet {
+              width: ${dimensions?.dimensions.width}px !important;
+              height: ${dimensions?.dimensions.height}px !important;
+            }
+            .pagedjs_pages {
+              display: flex;
+              flex-direction: column;
+              gap: 1em; /* space between pages */
+            }
+
+            table[data-split-from] thead,
+            table[data-split-from] thead :is(th, tr) {
+              visibility: unset !important;
+              margin-top: unset !important;
+              margin-bottom: unset !important;
+              padding-top: unset !important;
+              padding-bottom: unset !important;
+              border-top: unset !important;
+              border-bottom: unset !important;
+              line-height: unset !important;
+              opacity: unset !important;
+            }
+            `}
+        </style>
           {children}
       </html>
     </GlobalPageSizeContext.Provider>

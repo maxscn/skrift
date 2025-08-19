@@ -93,7 +93,7 @@ const Preview = ({ documentTitle, pageSize, className, ...props }: PreviewProps)
   const { toggled: toolbarToggled } = useToolbarState();
   return (
     <>
-        <PrintPreview documentTitle={documentTitle} ref={iframeRef} />
+        {/* <PrintPreview documentTitle={documentTitle} ref={iframeRef} /> */}
 
       <Topbar documentTitle={documentTitle} className="print:hidden">
         <ViewSizeControls
@@ -165,6 +165,7 @@ const Preview = ({ documentTitle, pageSize, className, ...props }: PreviewProps)
                 width={currentPreset.dimensions.width}
                 height={currentPreset.dimensions.height}
                 ref={(iframe) => {
+                  iframeRef.current = iframe;
                   if (iframe) {
                     return makeIframeDocumentBubbleEvents(iframe);
                   }
