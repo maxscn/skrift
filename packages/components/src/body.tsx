@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface BodyProps {
-  backgroundColor: string;
+  backgroundColor?: string;
   children: React.ReactNode;
 }
 
